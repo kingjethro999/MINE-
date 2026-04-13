@@ -21,6 +21,7 @@ async function main() {
   
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_URL?.includes('render.com') ? { rejectUnauthorized: false } : false
   });
 
   try {
