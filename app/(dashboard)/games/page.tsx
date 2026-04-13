@@ -53,7 +53,7 @@ export default async function GamesPage({
           </a>
           <GameMonetizeEmbed
             gameId={activeGame.id}
-            showAds={planData.adsInGames}
+            gameUrl={activeGame.url}
             coinsPerMinute={planData.gameEarningsPerMinute}
           />
         </div>

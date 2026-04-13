@@ -40,6 +40,7 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "Mines Platform",
   },
+  referrer: "no-referrer-when-downgrade",
 };
 
 export default function RootLayout({

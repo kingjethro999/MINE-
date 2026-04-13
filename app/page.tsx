@@ -104,10 +104,6 @@ export default function Home() {
                     <Check size={20} className={plan.autoMine ? "text-[var(--color-accent)] shrink-0" : "text-[var(--border)] shrink-0"} />
                     <span className={plan.autoMine ? "" : "line-through opacity-70"}>Auto-mine while offline</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <Check size={20} className={!plan.adsInGames ? "text-[var(--color-accent)] shrink-0" : "text-[var(--border)] shrink-0"} />
-                    <span className={!plan.adsInGames ? "" : "line-through opacity-70"}>Ad-free games</span>
-                  </li>
                 </ul>
 
                 <Link href={`/register`} className={`mt-auto text-center py-3 rounded-lg font-bold transition-colors ${plan.id === 'premium' ? 'bg-[var(--color-accent)] text-[#0a0f0d] hover:bg-[var(--gold-600)]' : 'bg-[var(--surface-700)] text-[var(--text-primary)] hover:bg-[var(--surface-600)]'}`}>
