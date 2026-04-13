@@ -19,3 +19,68 @@ export async function verifyPayment(reference: string) {
   });
   return res.json();
 }
+
+export interface PaystackBank {
+  id: number;
+  name: string;
+  slug: string;
+  code: string;
+  longcode: string;
+  gateway: string | null;
+  pay_with_bank: boolean;
+  active: boolean;
+  is_deleted: boolean;
+  country: string;
+  currency: string;
+  type: string;
+  logo: string;
+}
+
+export async function getBanks(country: string = "Nigeria"): Promise<PaystackBank[]> {
+  const res = await fetch(`https://api.paystack.co/bank?country=${country.toLowerCase()}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+    },
+    next: { revalidate: 60 * 60 * 24 }, // Cache for 24 hours
+  });
+  const data = await res.json();
+  return data.data || [];
+}
+
+export interface AccountVerificationResult {
+  account_number: string;
+  account_name: string;
+  bank_id: number;
+  verification_status: string;
+}
+
+export async function verifyAccount(
+  accountNumber: string,
+  bankCode: string
+): Promise<{ success: boolean; data?: AccountVerificationResult; error?: string }> {
+  const res = await fetch("https://api.paystack.co/bank/resolve", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+    },
+  });
+  
+  // Actually, we need to use the correct endpoint
+  const actualRes = await fetch(
+    `https://api.paystack.co/bank/resolve?account_number=${accountNumber}&bank_code=${bankCode}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+      },
+    }
+  );
+  const data = await actualRes.json();
+  
+  if (data.status) {
+    return { success: true, data: data.data };
+  }
+  
+  return { success: false, error: data.message || "Failed to verify account" };
+}

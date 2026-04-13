@@ -2,12 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { Pickaxe, Gamepad2, Landmark, Check } from "lucide-react";
 import { PLANS } from "@/lib/plans";
+import MobileHeader from "@/components/layout/MobileHeader";
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-[family-name:var(--font-dm-sans)]">
-      {/* Header */}
-      <header className="flex justify-between items-center p-6 lg:px-12 w-full max-w-7xl mx-auto">
+      {/* Desktop Header */}
+      <header className="hidden lg:flex justify-between items-center p-6 lg:px-12 w-full max-w-7xl mx-auto">
         <div className="flex items-center gap-3">
           <Image src="/icon.png" alt="Mines Platform Icon" width={40} height={40} />
           <span className="font-[family-name:var(--font-syne)] font-bold text-2xl tracking-tight text-[var(--color-accent)]">Mines</span>
@@ -18,12 +19,15 @@ export default function Home() {
         </nav>
       </header>
 
+      {/* Mobile Header */}
+      <MobileHeader />
+
       {/* Hero Section */}
       <main className="flex-1 flex flex-col items-center justify-center p-6 text-center lg:p-24 relative overflow-hidden w-full max-w-7xl mx-auto">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--color-accent)]/5 rounded-full blur-3xl -z-10" />
         
-        <h1 className="font-[family-name:var(--font-syne)] text-5xl lg:text-7xl font-extrabold max-w-4xl tracking-tight leading-tight mb-6">
-          Mine <span className="text-[var(--color-accent)]">MINE$</span>, Play Games,<br/> Earn Real Naira.
+        <h1 className="font-[family-name:var(--font-syne)] text-4xl md:text-5xl lg:text-7xl font-extrabold max-w-4xl tracking-tight leading-tight mb-6">
+          Mine <span className="text-[var(--color-accent)]">MINE$</span>, Play Games,<br className="hidden sm:block" /> Earn Real Naira.
         </h1>
         
         <p className="max-w-2xl text-lg lg:text-xl text-[var(--text-secondary)] mb-10 leading-relaxed font-[family-name:var(--font-dm-sans)]">
@@ -69,7 +73,7 @@ export default function Home() {
 
         {/* Plans Section */}
         <div className="w-full max-w-5xl mb-20 text-center">
-          <h2 className="font-[family-name:var(--font-syne)] text-4xl lg:text-5xl font-bold mb-6">Choose Your Plan</h2>
+          <h2 className="font-[family-name:var(--font-syne)] text-3xl md:text-4xl lg:text-5xl font-bold mb-6">Choose Your Plan</h2>
           <p className="text-[var(--text-secondary)] mb-12 max-w-xl mx-auto">
             Get started with a one-time subscription that fits your earning goals. Upgrade anytime.
           </p>

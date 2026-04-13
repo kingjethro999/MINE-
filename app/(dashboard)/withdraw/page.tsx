@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
 import { PLANS, PlanId } from "@/lib/plans";
 import { CreditCard, History } from "lucide-react";
+import WithdrawForm from "@/components/withdraw/WithdrawForm";
 
 export default async function WithdrawPage() {
   const session = await auth();
@@ -44,62 +45,20 @@ export default async function WithdrawPage() {
             </div>
           )}
 
-          <form action="/api/withdraw" method="POST" className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-[var(--text-muted)] mb-1">Amount (₦)</label>
-              <input 
-                name="amount" 
-                type="number" 
-                min={1000}
-                max={user.coinsBalance}
-                required 
-                className="w-full bg-[var(--surface-900)] border border-[var(--surface-600)] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[var(--gold-500)] transition-colors mono-figure" 
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2 sm:col-span-1">
-                <label className="block text-sm font-medium text-[var(--text-muted)] mb-1">Bank Name</label>
-                <input 
-                  name="bankName" 
-                  type="text" 
-                  defaultValue={user.bankName || ""}
-                  required 
-                  className="w-full bg-[var(--surface-900)] border border-[var(--surface-600)] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[var(--gold-500)]" 
-                />
-              </div>
-              <div className="col-span-2 sm:col-span-1">
-                <label className="block text-sm font-medium text-[var(--text-muted)] mb-1">Account Number</label>
-                <input 
-                  name="accountNumber" 
-                  type="text" 
-                  defaultValue={user.bankAccountNumber || ""}
-                  required 
-                  className="w-full bg-[var(--surface-900)] border border-[var(--surface-600)] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[var(--gold-500)] mono-figure" 
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-[var(--text-muted)] mb-1">Account Name</label>
-              <input 
-                name="accountName" 
-                type="text" 
-                defaultValue={user.bankAccountName || ""}
-                required 
-                className="w-full bg-[var(--surface-900)] border border-[var(--surface-600)] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[var(--gold-500)]" 
-              />
-            </div>
-            
-            <button 
-              type="submit" 
-              disabled={!canWithdraw}
-              className="w-full bg-[var(--gold-500)] disabled:bg-[var(--surface-600)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed text-black font-bold text-sm tracking-widest uppercase py-4 rounded-lg mt-4 transition-colors"
-            >
-              Submit Request
-            </button>
-            <p className="text-center text-xs text-[var(--text-muted)] mt-4">Transfers processed in {planData.disbursementDays} Day(s)</p>
-          </form>
+          <WithdrawForm
+            userId={user.id}
+            coinsBalance={user.coinsBalance}
+            minWithdrawal={planData.withdrawalThreshold}
+            planName={user.plan}
+            defaultBankCode={user.bankCode || undefined}
+            defaultBankName={user.bankName || undefined}
+            defaultAccountNumber={user.bankAccountNumber || undefined}
+            defaultAccountName={user.bankAccountName || undefined}
+          />
+          
+          <p className="text-center text-xs text-[var(--text-muted)] mt-4">
+            Transfers processed in {planData.disbursementDays} Day(s)
+          </p>
         </div>
 
         {/* Recent History */}
@@ -111,7 +70,7 @@ export default async function WithdrawPage() {
           
           <div className="flex-1 overflow-y-auto p-2">
             {user.withdrawals.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-[var(--text-muted)] p-8 text-center text-sm mb-4">
+              <div className="h-full flex items-center justify-center text-[var(--text-muted)] p-8 text-center text-sm">
                 No withdrawal requests found.
               </div>
             ) : (

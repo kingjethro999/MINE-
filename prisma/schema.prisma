@@ -18,7 +18,9 @@ model User {
   bankAccountNumber String?
   bankAccountName   String?
   bankName          String?
-  activePlanPurchased Boolean     @default(false)    // Tracks if they've paid their initial onboarding fee
+  bankCode          String?       // e.g., "044" for Access Bank
+  activePlanPurchased Boolean     @default(false)
+  showAds           Boolean       @default(true)     // Premium users can disable ads
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 

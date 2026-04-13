@@ -1,36 +1,66 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/db";
 import { PLANS, PlanId } from "@/lib/plans";
-import { redirect } from "next/navigation";
 
 export async function POST(req: Request) {
   const session = await auth();
-  if (!session?.user?.id) return new Response("Unauthorized", { status: 401 });
+  if (!session?.user?.id) {
+    return Response.json({ success: false, error: "Unauthorized" }, { status: 401 });
+  }
 
-  const formData = await req.formData();
-  const amountStr = formData.get("amount") as string;
-  const bankName = formData.get("bankName") as string;
-  const accountNumber = formData.get("accountNumber") as string;
-  const accountName = formData.get("accountName") as string;
+  let body: {
+    amount: number;
+    bankName: string;
+    bankCode?: string;
+    accountNumber: string;
+    accountName: string;
+  };
 
-  const amount = parseFloat(amountStr);
+  try {
+    body = await req.json();
+  } catch {
+    return Response.json({ success: false, error: "Invalid request body" }, { status: 400 });
+  }
 
-  const user = await prisma.user.findUnique({ where: { id: session.user.id }});
-  if (!user) return redirect("/login");
+  const { amount, bankName, bankCode, accountNumber, accountName } = body;
+
+  if (!amount || !bankName || !accountNumber || !accountName) {
+    return Response.json({ success: false, error: "Missing required fields" }, { status: 400 });
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (!user) {
+    return Response.json({ success: false, error: "User not found" }, { status: 404 });
+  }
 
   const planData = PLANS[user.plan.toLowerCase() as PlanId];
-  const Threshold = planData.withdrawalThreshold;
+  const threshold = planData.withdrawalThreshold;
 
-  if (amount >= 1000 && user.coinsBalance >= amount && user.coinsBalance >= Threshold) {
+  if (amount < threshold) {
+    return Response.json(
+      { success: false, error: `Minimum withdrawal is ₦${threshold.toLocaleString()}` },
+      { status: 400 }
+    );
+  }
+
+  if (amount > user.coinsBalance) {
+    return Response.json(
+      { success: false, error: "Insufficient balance" },
+      { status: 400 }
+    );
+  }
+
+  try {
     await prisma.$transaction([
       prisma.user.update({
         where: { id: user.id },
         data: {
           coinsBalance: { decrement: amount },
           bankName,
+          bankCode: bankCode || null,
           bankAccountNumber: accountNumber,
-          bankAccountName: accountName
-        }
+          bankAccountName: accountName,
+        },
       }),
       prisma.withdrawal.create({
         data: {
@@ -38,11 +68,17 @@ export async function POST(req: Request) {
           amount,
           bankName,
           accountNumber,
-          accountName
-        }
-      })
+          accountName,
+        },
+      }),
     ]);
-  }
 
-  redirect("/withdraw");
+    return Response.json({ success: true });
+  } catch (error) {
+    console.error("Withdrawal error:", error);
+    return Response.json(
+      { success: false, error: "Failed to process withdrawal" },
+      { status: 500 }
+    );
+  }
 }

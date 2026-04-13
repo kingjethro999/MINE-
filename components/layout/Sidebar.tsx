@@ -10,7 +10,8 @@ import {
   ArrowUpCircle, 
   ShieldCheck, 
   Axe,
-  LogOut
+  LogOut,
+  Settings
 } from "lucide-react";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
@@ -32,10 +33,11 @@ export default function Sidebar({ plan, isAdmin }: SidebarProps) {
     { href: "/games", label: "Games", icon: <Gamepad2 size={20} /> },
     { href: "/withdraw", label: "Withdraw", icon: <CreditCard size={20} /> },
     { href: "/referral", label: "Referral", icon: <Network size={20} /> },
+    { href: "/settings", label: "Settings", icon: <Settings size={20} /> },
   ];
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-[var(--surface-800)] border-r border-[var(--surface-600)] flex flex-col z-50">
+    <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-[var(--surface-800)] border-r border-[var(--surface-600)] flex-col z-50">
       {/* Brand */}
       <div className="flex items-center gap-3 px-6 py-8">
         <Image src="/icon.png" alt="Mines Logo" width={32} height={32} className="rounded" />

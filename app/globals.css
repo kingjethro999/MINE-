@@ -241,3 +241,38 @@ h1, h2, h3, h4, h5, h6 {
 .explore-games-btn:hover {
   background: var(--gold-600);
 }
+
+/* Slim scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-600);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--surface-500);
+}
+
+/* Firefox slim scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-600) transparent;
+}
+
+/* Remove scrollbar from inputs and textareas */
+input,
+textarea,
+select {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+input::-webkit-scrollbar,
+textarea::-webkit-scrollbar,
+select::-webkit-scrollbar {
+  display: none;
+}
