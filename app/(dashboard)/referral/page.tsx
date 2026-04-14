@@ -2,7 +2,8 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import prisma from "@/lib/db";
-import { Network, Copy } from "lucide-react";
+import { Network } from "lucide-react";
+import ReferralLinkCard from "@/components/referral/ReferralLinkCard";
 
 export default async function ReferralPage() {
   const session = await auth();
@@ -47,18 +48,7 @@ export default async function ReferralPage() {
           </div>
           <p className="text-[var(--text-muted)] text-sm mb-4">Share this link. Anyone who registers will become your direct downline.</p>
           
-          <div className="flex bg-[var(--surface-900)] rounded-lg border border-[var(--surface-600)] overflow-hidden">
-            <input 
-              type="text" 
-              readOnly 
-              value={referralLink} 
-              className="bg-transparent text-[var(--gold-300)] px-4 py-3 flex-1 outline-none font-mono text-sm" 
-            />
-            {/* The copy would need client UI, omitted logic for boilerplate */}
-            <button className="bg-[var(--surface-700)] px-4 border-l border-[var(--surface-600)] hover:bg-[var(--surface-600)] transition-colors text-white">
-              <Copy size={16} />
-            </button>
-          </div>
+          <ReferralLinkCard referralLink={referralLink} />
         </div>
 
         {/* Commission Stats */}
