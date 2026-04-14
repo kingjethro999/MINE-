@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { PLANS, PlanId } from "@/lib/plans";
-import { ShieldCheck, Check } from "lucide-react";
+import { ShieldCheck, Check, Star, Zap } from "lucide-react";
 import { toast } from "sonner";
 
 export default function PlanSelector() {
@@ -10,10 +10,6 @@ export default function PlanSelector() {
   const plan = PLANS[selectedPlan];
 
   const handlePay = async () => {
-    // In a real app, this would call a server action or API to get a Paystack access code
-    // and then use the Paystack inline JS SDK to open the popup.
-    // For now, we'll simulate the post request to illustrate the flow.
-    
     toast.info(`Initializing payment for ${plan.name} plan...`);
     
     const form = document.createElement("form");
@@ -38,6 +34,10 @@ export default function PlanSelector() {
 
   return (
     <div className="w-full max-w-5xl space-y-8">
+      <div className="text-center mb-8">
+        <p className="text-[var(--text-secondary)] text-sm">Select a plan to activate your mining account</p>
+      </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {(Object.keys(PLANS) as PlanId[]).map((id) => {
           const p = PLANS[id];
@@ -47,36 +47,64 @@ export default function PlanSelector() {
             <div 
               key={id} 
               onClick={() => setSelectedPlan(id)}
-              className={`cursor-pointer p-6 rounded-2xl border-2 transition-all duration-300 relative overflow-hidden ${
+              className={`cursor-pointer p-8 rounded-2xl border-2 transition-all duration-300 relative overflow-hidden ${
                 isSelected 
-                  ? "border-[var(--gold-500)] bg-[var(--surface-700)] shadow-[0_0_30px_rgba(212,175,55,0.1)] scale-[1.02]" 
-                  : "border-[var(--surface-600)] bg-[var(--surface-800)] hover:border-[var(--surface-500)] opacity-70 hover:opacity-100"
+                  ? "border-[var(--gold-500)] bg-[var(--surface-700)] shadow-[0_0_40px_rgba(212,175,55,0.15)] scale-[1.02]" 
+                  : "border-[var(--surface-600)] bg-[var(--surface-800)] hover:border-[var(--surface-500)]"
               }`}
             >
               {isSelected && (
-                <div className="absolute top-3 right-3 text-[var(--gold-500)]">
-                  <Check size={20} />
+                <div className="absolute top-4 right-4 w-8 h-8 bg-[var(--gold-500)] rounded-full flex items-center justify-center">
+                  <Check size={18} className="text-black" />
+                </div>
+              )}
+
+              {id === 'premium' && (
+                <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-amber-500 to-yellow-500 text-black text-xs font-bold px-3 py-1 text-center uppercase tracking-wider">
+                  Recommended
                 </div>
               )}
               
-              <div className="mb-4">
-                <h3 className={`text-lg font-bold tracking-wider ${isSelected ? "text-[var(--gold-400)]" : "text-white"}`}>
-                  {p.name.toUpperCase()}
-                </h3>
-                <div className="mt-2 text-2xl font-bold text-white mono-figure">
-                  ₦ {p.price.toLocaleString()}
+              <div className="mb-6 mt-2">
+                <div className="flex items-center gap-2 mb-2">
+                  <Star size={16} className={id === 'premium' ? 'text-amber-400' : id === 'pro' ? 'text-blue-400' : 'text-gray-400'} />
+                  <h3 className={`text-xl font-bold tracking-wider ${isSelected ? "text-[var(--gold-400)]" : "text-white"}`}>
+                    {p.name.toUpperCase()}
+                  </h3>
                 </div>
+                <div className="text-3xl font-bold text-white mono-figure">
+                  ₦{p.price.toLocaleString()}
+                </div>
+                <p className="text-xs text-[var(--text-muted)] mt-1">One-time payment</p>
               </div>
 
-              <ul className="space-y-3">
-                <li className="flex items-start gap-2 text-xs text-[var(--text-secondary)]">
-                  <ShieldCheck size={14} className="text-[var(--gold-500)] shrink-0 mt-0.5" />
-                  Earn ₦ {p.earningPerHour}/hr
+              <div className="h-px bg-[var(--surface-600)] mb-6" />
+
+              <ul className="space-y-4">
+                <li className="flex items-center gap-3 text-sm">
+                  <Zap size={16} className="text-green-500" />
+                  <span>Earn <strong className="text-white">₦{p.earningPerHour}/hr</strong></span>
                 </li>
-                <li className="flex items-start gap-2 text-xs text-[var(--text-secondary)]">
-                  <ShieldCheck size={14} className="text-[var(--gold-500)] shrink-0 mt-0.5" />
-                  ₦ {p.gameEarningsPerMinute}/min in games
+                <li className="flex items-center gap-3 text-sm">
+                  <Zap size={16} className="text-green-500" />
+                  <span>Earn <strong className="text-white">₦{p.gameEarningsPerMinute}/min</strong> in games</span>
                 </li>
+                <li className="flex items-center gap-3 text-sm">
+                  <ShieldCheck size={16} className="text-[var(--gold-500)]" />
+                  <span>{p.withdrawalsPerMonth === Infinity ? 'Unlimited withdrawals' : `${p.withdrawalsPerMonth}x monthly`}</span>
+                </li>
+                {p.autoMine && (
+                  <li className="flex items-center gap-3 text-sm text-green-400">
+                    <Check size={16} />
+                    <span>Auto-mine 24/7</span>
+                  </li>
+                )}
+                {!p.autoMine && (
+                  <li className="flex items-center gap-3 text-sm text-[var(--text-muted)] line-through">
+                    <Check size={16} />
+                    <span>Auto-mine 24/7</span>
+                  </li>
+                )}
               </ul>
             </div>
           );
@@ -89,7 +117,7 @@ export default function PlanSelector() {
         
         <div className="flex justify-between items-center py-4 border-y border-[var(--surface-600)] mb-8">
           <span className="text-[var(--text-secondary)]">Activation Fee</span>
-          <span className="text-2xl font-bold text-white mono-figure">₦ {plan.price.toLocaleString()}</span>
+          <span className="text-2xl font-bold text-white mono-figure">₦{plan.price.toLocaleString()}</span>
         </div>
 
         <button 
