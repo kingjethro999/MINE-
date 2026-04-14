@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Pickaxe, Gamepad2, Landmark, Check } from "lucide-react";
+import { Pickaxe, Gamepad2, Landmark, Check, Coins, TrendingUp, Shield, Zap, ArrowRight } from "lucide-react";
 import { PLANS } from "@/lib/plans";
 import MobileHeader from "@/components/layout/MobileHeader";
 
@@ -68,6 +68,129 @@ export default function Home() {
             </div>
             <h3 className="font-[family-name:var(--font-syne)] text-xl font-bold mb-3">Real Withdrawals</h3>
             <p className="text-[var(--text-secondary)]">Convert your MINE$ to real Naira. Withdraw directly to your local bank account securely.</p>
+          </div>
+        </div>
+
+        {/* MINE$ Token Section */}
+        <div className="w-full max-w-6xl mb-32">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 rounded-full mb-6">
+              <Coins size={16} className="text-[var(--color-accent)]" />
+              <span className="text-[var(--color-accent)] font-semibold text-sm">Powered by MINE Coin (MIH)</span>
+            </div>
+            <h2 className="font-[family-name:var(--font-syne)] text-3xl md:text-4xl lg:text-5xl font-bold mb-4">What is MINE$?</h2>
+            <p className="text-[var(--text-secondary)] max-w-2xl mx-auto text-lg">
+              MINE$ is a hybrid cryptocurrency bridging traditional finance with DeFi. Tradeable on major exchanges with real USD value.
+            </p>
+          </div>
+
+          {/* Token Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+            <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-6 text-center">
+              <p className="text-[var(--text-muted)] text-xs uppercase tracking-wider mb-2">Current Price</p>
+              <p className="text-2xl font-bold text-[var(--color-accent)]">$0.16 - $0.19</p>
+            </div>
+            <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-6 text-center">
+              <p className="text-[var(--text-muted)] text-xs uppercase tracking-wider mb-2">Max Supply</p>
+              <p className="text-2xl font-bold text-white">2B</p>
+            </div>
+            <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-6 text-center">
+              <p className="text-[var(--text-muted)] text-xs uppercase tracking-wider mb-2">Listed On</p>
+              <p className="text-lg font-bold text-white">MEXC & XT.COM</p>
+            </div>
+            <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-6 text-center">
+              <p className="text-[var(--text-muted)] text-xs uppercase tracking-wider mb-2">Type</p>
+              <p className="text-lg font-bold text-white">Hybrid PayFi + DeFi</p>
+            </div>
+          </div>
+
+          {/* How Mining Works */}
+          <div className="bg-gradient-to-br from-[var(--surface-800)] to-[var(--bg-card)] border border-[var(--border)] rounded-3xl p-8 md:p-12">
+            <h3 className="font-[family-name:var(--font-syne)] text-2xl md:text-3xl font-bold text-center mb-12">How You Earn MINE$</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              {/* Step 1 */}
+              <div className="relative">
+                <div className="absolute -top-4 -left-2 w-10 h-10 bg-[var(--color-accent)] rounded-full flex items-center justify-center font-bold text-[#0a0f0d]">1</div>
+                <div className="pt-6">
+                  <div className="p-3 bg-[var(--color-accent)]/10 rounded-lg w-fit mb-4">
+                    <Shield size={24} className="text-[var(--color-accent)]" />
+                  </div>
+                  <h4 className="font-bold text-lg mb-2">Choose Your Plan</h4>
+                  <p className="text-[var(--text-secondary)] text-sm">Select a subscription tier that determines your mining power and earning rate.</p>
+                </div>
+                <ArrowRight size={20} className="hidden md:block absolute -right-6 top-1/2 -translate-y-1/4 text-[var(--text-muted)]" />
+              </div>
+
+              {/* Step 2 */}
+              <div className="relative">
+                <div className="absolute -top-4 -left-2 w-10 h-10 bg-[var(--color-accent)] rounded-full flex items-center justify-center font-bold text-[#0a0f0d]">2</div>
+                <div className="pt-6">
+                  <div className="p-3 bg-[var(--color-accent)]/10 rounded-lg w-fit mb-4">
+                    <Pickaxe size={24} className="text-[var(--color-accent)]" />
+                  </div>
+                  <h4 className="font-bold text-lg mb-2">Start Mining</h4>
+                  <p className="text-[var(--text-secondary)] text-sm">Your MINE$ is mined through validated platform activity. Premium users auto-mine 24/7.</p>
+                </div>
+                <ArrowRight size={20} className="hidden md:block absolute -right-6 top-1/2 -translate-y-1/4 text-[var(--text-muted)]" />
+              </div>
+
+              {/* Step 3 */}
+              <div className="relative">
+                <div className="absolute -top-4 -left-2 w-10 h-10 bg-[var(--color-accent)] rounded-full flex items-center justify-center font-bold text-[#0a0f0d]">3</div>
+                <div className="pt-6">
+                  <div className="p-3 bg-[var(--color-earn)]/10 rounded-lg w-fit mb-4">
+                    <TrendingUp size={24} className="text-[var(--color-earn)]" />
+                  </div>
+                  <h4 className="font-bold text-lg mb-2">Accumulate Value</h4>
+                  <p className="text-[var(--text-secondary)] text-sm">Play games and refer users to earn bonus MINE$. Every token increases in real value.</p>
+                </div>
+                <ArrowRight size={20} className="hidden md:block absolute -right-6 top-1/2 -translate-y-1/4 text-[var(--text-muted)]" />
+              </div>
+
+              {/* Step 4 */}
+              <div className="relative">
+                <div className="absolute -top-4 -left-2 w-10 h-10 bg-[var(--color-accent)] rounded-full flex items-center justify-center font-bold text-[#0a0f0d]">4</div>
+                <div className="pt-6">
+                  <div className="p-3 bg-green-500/10 rounded-lg w-fit mb-4">
+                    <Zap size={24} className="text-green-500" />
+                  </div>
+                  <h4 className="font-bold text-lg mb-2">Withdraw</h4>
+                  <p className="text-[var(--text-secondary)] text-sm">Convert your MINE$ to Naira at market rate and withdraw directly to your bank account.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="mt-12 pt-8 border-t border-[var(--border)] grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-[var(--surface-700)] rounded-full flex items-center justify-center shrink-0">
+                  <TrendingUp size={20} className="text-green-500" />
+                </div>
+                <div>
+                  <p className="font-semibold">Market Traded</p>
+                  <p className="text-sm text-[var(--text-secondary)]">MIH listed on MEXC & XT.COM</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-[var(--surface-700)] rounded-full flex items-center justify-center shrink-0">
+                  <Shield size={20} className="text-[var(--color-accent)]" />
+                </div>
+                <div>
+                  <p className="font-semibold">Transparent Value</p>
+                  <p className="text-sm text-[var(--text-secondary)]">MIH backed by real platform activity</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-[var(--surface-700)] rounded-full flex items-center justify-center shrink-0">
+                  <Zap size={20} className="text-amber-500" />
+                </div>
+                <div>
+                  <p className="font-semibold">Fast Settlements</p>
+                  <p className="text-sm text-[var(--text-secondary)]">Withdrawals within 6 hours</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
