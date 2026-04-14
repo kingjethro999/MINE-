@@ -28,13 +28,27 @@ export async function POST(req: Request) {
     return Response.json({ success: false, error: "Missing required fields" }, { status: 400 });
   }
 
-  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: { referralsMade: true },
+  });
   if (!user) {
     return Response.json({ success: false, error: "User not found" }, { status: 404 });
   }
 
   const planData = PLANS[user.plan.toLowerCase() as PlanId];
   const threshold = planData.withdrawalThreshold;
+  const downlineCount = user.referralsMade.length;
+
+  if (downlineCount < planData.minDownlines) {
+    return Response.json(
+      {
+        success: false,
+        error: `You need at least ${planData.minDownlines} downlines to withdraw. You currently have ${downlineCount}.`,
+      },
+      { status: 400 }
+    );
+  }
 
   if (amount < threshold) {
     return Response.json(

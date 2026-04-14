@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import prisma from "@/lib/db";
 import { Network, Copy } from "lucide-react";
 
@@ -19,7 +20,12 @@ export default async function ReferralPage() {
 
   if (!user) redirect("/login");
 
-  // Sum total commissions
+  const headersList = await headers();
+  const host = headersList.get("host") || "";
+  const protocol = host.includes("localhost") ? "http" : "https";
+  const origin = `${protocol}://${host}`;
+  const referralLink = `${origin}/register/${user.id}`;
+
   const totalCommissions = user.referralEarnings.reduce((acc, curr) => acc + curr.commission, 0);
 
   return (
@@ -45,7 +51,7 @@ export default async function ReferralPage() {
             <input 
               type="text" 
               readOnly 
-              value={`https://mines.app/register/${user.id}`} 
+              value={referralLink} 
               className="bg-transparent text-[var(--gold-300)] px-4 py-3 flex-1 outline-none font-mono text-sm" 
             />
             {/* The copy would need client UI, omitted logic for boilerplate */}

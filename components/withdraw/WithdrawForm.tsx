@@ -10,6 +10,8 @@ interface WithdrawFormProps {
   coinsBalance: number;
   minWithdrawal: number;
   planName: string;
+  downlineCount: number;
+  minDownlines: number;
   defaultBankCode?: string;
   defaultBankName?: string;
   defaultAccountNumber?: string;
@@ -21,6 +23,8 @@ export default function WithdrawForm({
   coinsBalance,
   minWithdrawal,
   planName,
+  downlineCount,
+  minDownlines,
   defaultBankCode,
   defaultBankName,
   defaultAccountNumber,
@@ -152,7 +156,8 @@ export default function WithdrawForm({
     }
   }
 
-  const canWithdraw = coinsBalance >= minWithdrawal;
+  const meetsDownlineReq = downlineCount >= minDownlines;
+  const canWithdraw = coinsBalance >= minWithdrawal && meetsDownlineReq;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -243,12 +248,20 @@ export default function WithdrawForm({
         </div>
       )}
 
+      {!meetsDownlineReq && (
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 mb-4">
+          <p className="text-xs text-amber-400 font-medium">
+            Need {minDownlines - downlineCount} more downline{minDownlines - downlineCount !== 1 ? "s" : ""} to unlock withdrawals
+          </p>
+        </div>
+      )}
+
       <button
         type="submit"
         disabled={!canWithdraw || !validated || submitting}
         className="w-full bg-[var(--gold-500)] disabled:bg-[var(--surface-600)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed text-black font-bold text-sm tracking-widest uppercase py-4 rounded-lg mt-6 transition-colors"
       >
-        {submitting ? "Processing..." : "Submit Request"}
+        {submitting ? "Processing..." : !meetsDownlineReq ? `Need ${minDownlines - downlineCount} More Downlines` : "Submit Request"}
       </button>
     </form>
   );

@@ -11,6 +11,7 @@ export const PLANS = {
     disbursementDays: 5,
     withdrawalsPerMonth: 1,
     gameEarningsPerMinute: 5,
+    minDownlines: 10,
   },
   pro: {
     id: "pro",
@@ -24,6 +25,7 @@ export const PLANS = {
     disbursementDays: 3,
     withdrawalsPerMonth: 2,
     gameEarningsPerMinute: 10,
+    minDownlines: 5,
   },
   premium: {
     id: "premium",
@@ -38,6 +40,7 @@ export const PLANS = {
     disbursementDays: 0.25,
     withdrawalsPerMonth: Infinity,
     gameEarningsPerMinute: 20,
+    minDownlines: 2,
   },
 } as const;
 

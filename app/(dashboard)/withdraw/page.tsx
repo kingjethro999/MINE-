@@ -11,13 +11,18 @@ export default async function WithdrawPage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    include: { withdrawals: { orderBy: { requestedAt: "desc" }, take: 5 } },
+    include: {
+      withdrawals: { orderBy: { requestedAt: "desc" }, take: 5 },
+      referralsMade: true,
+    },
   });
 
   if (!user) redirect("/login");
 
   const planData = PLANS[user.plan.toLowerCase() as PlanId];
-  const canWithdraw = user.coinsBalance >= planData.withdrawalThreshold;
+  const downlineCount = user.referralsMade.length;
+  const meetsDownlineRequirement = downlineCount >= planData.minDownlines;
+  const canWithdraw = user.coinsBalance >= planData.withdrawalThreshold && meetsDownlineRequirement;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -37,7 +42,16 @@ export default async function WithdrawPage() {
             </div>
           </div>
 
-          {!canWithdraw && user.plan !== "PREMIUM" && (
+          {!meetsDownlineRequirement && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6">
+              <p className="text-sm text-[var(--color-danger)] font-medium">
+                You need at least {planData.minDownlines} downlines to withdraw on the {user.plan} plan. 
+                You currently have {downlineCount} downline{downlineCount !== 1 ? "s" : ""}.
+              </p>
+            </div>
+          )}
+
+          {!canWithdraw && user.plan !== "PREMIUM" && meetsDownlineRequirement && (
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6">
               <p className="text-sm text-[var(--color-danger)] font-medium">
                 You must reach the ₦{planData.withdrawalThreshold.toLocaleString()} threshold to withdraw on the {user.plan} plan.
@@ -50,6 +64,8 @@ export default async function WithdrawPage() {
             coinsBalance={user.coinsBalance}
             minWithdrawal={planData.withdrawalThreshold}
             planName={user.plan}
+            downlineCount={downlineCount}
+            minDownlines={planData.minDownlines}
             defaultBankCode={user.bankCode || undefined}
             defaultBankName={user.bankName || undefined}
             defaultAccountNumber={user.bankAccountNumber || undefined}
