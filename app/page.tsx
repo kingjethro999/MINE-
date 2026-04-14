@@ -1,26 +1,17 @@
-import Image from "next/image";
+import { auth } from "@/auth";
 import Link from "next/link";
 import { Pickaxe, Gamepad2, Landmark, Check, Coins, TrendingUp, Shield, Zap, ArrowRight, Users, Gift, Wallet, Star, Swords, Award } from "lucide-react";
 import { PLANS, AXES_TIERS } from "@/lib/plans";
-import MobileHeader from "@/components/layout/MobileHeader";
+import HeaderNav from "@/components/landing/HeaderNav";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+  const isLoggedIn = !!session?.user;
+
   return (
     <div className="flex flex-col min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-[family-name:var(--font-dm-sans)]">
-      {/* Desktop Header */}
-      <header className="hidden lg:flex justify-between items-center p-6 lg:px-12 w-full max-w-7xl mx-auto">
-        <div className="flex items-center gap-3">
-          <Image src="/icon.png" alt="Mines Platform Icon" width={40} height={40} />
-          <span className="font-[family-name:var(--font-syne)] font-bold text-2xl tracking-tight text-[var(--color-accent)]">Mines</span>
-        </div>
-        <nav className="flex items-center gap-4">
-          <Link href="/login" className="px-4 py-2 font-medium hover:text-[var(--color-accent)] transition">Log In</Link>
-          <Link href="/register" className="px-5 py-2 font-semibold text-[#0a0f0d] bg-[var(--color-accent)] rounded-lg hover:bg-[var(--gold-600)] transition">Sign Up</Link>
-        </nav>
-      </header>
-
-      {/* Mobile Header */}
-      <MobileHeader />
+      {/* Header with Auth State */}
+      <HeaderNav isLoggedIn={isLoggedIn} />
 
       {/* Hero Section */}
       <main className="flex-1 flex flex-col items-center justify-center p-6 text-center lg:p-24 relative overflow-hidden w-full max-w-7xl mx-auto">
