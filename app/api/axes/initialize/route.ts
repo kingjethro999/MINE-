@@ -29,9 +29,9 @@ export async function POST(req: Request) {
   });
 
   const pstk = await initializePayment(session.user.email, price, ref);
-  if (pstk.status && pstk.data.authorization_url) {
+  if (pstk.status && pstk.data?.authorization_url) {
     redirect(pstk.data.authorization_url);
   }
-
-  redirect("/axes");
+  console.error("Paystack initialize failed:", pstk.message ?? pstk);
+  redirect("/axes?error=paystack_init_failed");
 }

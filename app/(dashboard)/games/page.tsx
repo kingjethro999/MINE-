@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
 import { PLANS, PlanId } from "@/lib/plans";
 import GameMonetizeEmbed from "@/components/games/GameMonetizeEmbed";
-import { Gamepad2, ArrowLeft } from "lucide-react";
+import { Gamepad2, ArrowLeft, Activity, ShieldCheck, Zap } from "lucide-react";
 
 export default async function GamesPage({
   searchParams
@@ -41,37 +41,60 @@ export default async function GamesPage({
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header>
-        <h1 className="text-3xl font-bold text-white mb-2">Games Arcade</h1>
-        <p className="text-[var(--text-secondary)]">Play games and earn ₦{planData.gameEarningsPerMinute}/min active time.</p>
+        <h1 className="text-3xl font-black text-white mb-2 tracking-tight uppercase">Simulation Training</h1>
+        <p className="text-[var(--text-secondary)] font-medium">Train your validator nodes through high-frequency neural simulations to earn extra yield at ₦{planData.gameEarningsPerMinute}/min.</p>
       </header>
 
       {activeGame ? (
-        <div>
-          <a href="/games" className="text-[var(--gold-400)] text-sm font-bold hover:underline mb-4 inline-flex items-center gap-2">
-            <ArrowLeft size={16} />
-            Back to Catalog
+        <div className="max-w-5xl mx-auto">
+          <a href="/games" className="text-[var(--color-accent)] text-[10px] font-black uppercase tracking-widest hover:text-white mb-6 inline-flex items-center gap-2 transition-colors">
+            <ArrowLeft size={14} />
+            Halt Simulation & Return
           </a>
-          <GameMonetizeEmbed
-            gameId={activeGame.id}
-            gameUrl={activeGame.url}
-            coinsPerMinute={planData.gameEarningsPerMinute}
-          />
+          <div className="bg-black/40 rounded-[32px] overflow-hidden border border-white/5 shadow-2xl">
+            <GameMonetizeEmbed
+                gameId={activeGame.id}
+                gameUrl={activeGame.url}
+                coinsPerMinute={planData.gameEarningsPerMinute}
+            />
+          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
           {gamesWithIds.map((game: any) => (
             <a
               key={game.id}
               href={`/games?game=${game.id}`}
-              className="bg-[var(--surface-800)] border border-[var(--surface-600)] rounded-xl overflow-hidden card-lift block group"
+              className="bg-[var(--surface-800)] border border-[var(--surface-600)] rounded-[24px] overflow-hidden shadow-xl card-lift block group hover:border-[var(--color-accent)]/30 transition-all"
             >
-              <img src={game.thumb} alt={game.title} className="w-full aspect-[4/3] object-cover" />
-              <div className="p-4 flex items-center justify-between">
-                <h3 className="font-bold text-white text-sm truncate pr-2">{game.title}</h3>
-                <Gamepad2 size={16} className="text-[var(--gold-500)] group-hover:scale-110 transition-transform" />
+              <div className="relative">
+                 <img src={game.thumb} alt={game.title} className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-500" />
+                 <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-[var(--color-accent)] text-[#0a0f0d] p-1.5 rounded-lg shadow-lg">
+                       <Zap size={14} className="fill-current" />
+                    </div>
+                 </div>
+              </div>
+              <div className="p-5 flex items-center justify-between gap-2">
+                <h3 className="font-black text-white text-[11px] uppercase tracking-wider truncate flex-1">{game.title}</h3>
+                <Activity size={14} className="text-[var(--text-muted)] group-hover:text-[var(--color-accent)] transition-colors" />
               </div>
             </a>
           ))}
+        </div>
+      )}
+
+      {!activeGame && (
+        <div className="p-8 bg-black/20 border border-white/5 rounded-[32px]">
+           <div className="flex items-center gap-4">
+              <div className="p-3 bg-[var(--color-accent)]/10 rounded-2xl border border-[var(--color-accent)]/10">
+                 <ShieldCheck size={24} className="text-[var(--color-accent)]" />
+              </div>
+              <div>
+                 <h4 className="font-black text-white text-sm uppercase tracking-widest">Incentivized Training</h4>
+                 <p className="text-[10px] text-[var(--text-muted)] leading-relaxed font-bold uppercase tracking-wider opacity-60">Every minute of active simulation generates supplementary protocol yield. Credits are reconciled in real-time upon simulation completion.</p>
+              </div>
+           </div>
         </div>
       )}
     </div>

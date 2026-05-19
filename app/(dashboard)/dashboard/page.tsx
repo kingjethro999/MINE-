@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { PLANS, PlanId } from "@/lib/plans";
 import prisma from "@/lib/db";
 import GamesFeedPreview from "@/components/games/GamesFeedPreview";
-import { Pickaxe, Calendar, Banknote } from "lucide-react";
+import { Lock, Calendar, Banknote, Activity, ShieldCheck, Zap, Layers } from "lucide-react";
+import DashboardBalanceTicker from "@/components/dashboard/DashboardBalanceTicker";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -19,94 +20,131 @@ export default async function DashboardPage() {
   const isPremium = user.plan === "PREMIUM";
 
   // Identify next withdrawal date
-  let nextWithdrawal = "Custom / Anytime";
+  let nextWithdrawal = "Protocol Verification Pending";
   if (!isPremium) {
-    const today = new Date();
-    // Simplified specific-day logic depending if it's past the current day
     if (planData.withdrawalDays[0] === 28) {
-      nextWithdrawal = "28th of the month";
+      nextWithdrawal = "28th Disbursement Cycle";
     } else {
-      nextWithdrawal = "14th or 28th of the month"; 
+      nextWithdrawal = "14th & 28th Cycles"; 
     }
   } else {
-    nextWithdrawal = "Every Thursday";
+    nextWithdrawal = "Every Thursday (Priority)";
   }
 
-  // Active mining check
+  // Active mining check (rebranded as Staking)
   const activeSession = await prisma.miningSession.findFirst({
     where: { userId: user.id, endedAt: null },
   });
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <header>
-        <h1 className="text-3xl font-bold text-white mb-2">Welcome back, {user.name}</h1>
-        <p className="text-[var(--text-secondary)]">Here's your current overview and earning status.</p>
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-white mb-1 tracking-tight">Active Validator: {user.name}</h1>
+          <p className="text-[var(--text-secondary)] font-medium">Protocol Overview & Real-time Yield Analytics</p>
+        </div>
+        <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-xl">
+           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+           <span className="text-xs font-black text-green-500 uppercase tracking-widest">Network Operational</span>
+        </div>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Balance Card Main */}
-        <div className="lg:col-span-2 balance-card rounded-2xl p-8 relative overflow-hidden card-lift">
+        <div className="lg:col-span-2 balance-card rounded-[32px] p-8 md:p-10 relative overflow-hidden card-lift shadow-2xl">
           <div className="relative z-10 flex flex-col h-full justify-between">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-[var(--text-muted)] text-sm font-medium uppercase tracking-wider mb-1">Available Balance</p>
-                <div className="text-4xl sm:text-5xl font-bold text-[var(--gold-400)] mono-figure tracking-tight">
-                  ₦ {user.coinsBalance.toFixed(2)}
-                </div>
+                <p className="text-[var(--text-muted)] text-xs font-bold uppercase tracking-[0.2em] mb-3 opacity-80">Accumulated Yield</p>
+                <DashboardBalanceTicker 
+                  initialBalance={user.coinsBalance} 
+                  perHourRate={planData.earningPerHour} 
+                  isActive={!!activeSession} 
+                />
               </div>
-              <div className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider plan-badge-${user.plan.toLowerCase()}`}>
-                {user.plan}
+              <div className={`text-[10px] font-black px-4 py-1.5 rounded-lg border border-white/10 uppercase tracking-[0.15em] shadow-lg ${user.plan === 'PREMIUM' ? 'bg-[var(--color-accent)] text-[#0a0f0d]' : 'bg-black/40 text-white'}`}>
+                {user.plan} NODE
               </div>
             </div>
 
-            <div className="mt-8 flex items-center gap-6">
-              <div>
-                <p className="text-[var(--text-muted)] text-xs mb-1">Total Earned</p>
-                <p className="text-white font-semibold mono-figure">₦ {user.totalEarned.toFixed(2)}</p>
+            <div className="mt-12 flex flex-wrap items-center gap-8 md:gap-12">
+              <div className="group cursor-help">
+                <p className="text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest mb-1.5 group-hover:text-white transition-colors">Lifecycle Earnings</p>
+                <p className="text-xl font-bold text-white mono-figure">₦ {user.totalEarned.toLocaleString()}</p>
               </div>
-              <div className="h-8 w-px bg-[var(--surface-600)]"></div>
+              <div className="h-10 w-px bg-white/10 hidden md:block"></div>
               <div>
-                <p className="text-[var(--text-muted)] text-xs mb-1">Status</p>
-                <div className="flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full ${activeSession ? "bg-[var(--green-500)] shadow-[0_0_8px_rgba(34,197,94,0.6)]" : "bg-[var(--gray-600)]"}`}></span>
-                  <span className={activeSession ? "text-[var(--green-500)] text-sm font-medium" : "text-[var(--text-secondary)] text-sm"}>
-                    {activeSession ? "Mining Active" : "Idle"}
+                <p className="text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest mb-1.5">Validator Status</p>
+                <div className="flex items-center gap-3 py-1 px-3 bg-black/30 rounded-full border border-white/5">
+                  <span className={`w-2.5 h-2.5 rounded-full ${activeSession ? "bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.8)]" : "bg-red-500/50"}`}></span>
+                  <span className={`text-[11px] font-black uppercase tracking-widest ${activeSession ? "text-green-400" : "text-red-400"}`}>
+                    {activeSession ? "Staking Active" : "Node Inactive"}
                   </span>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="absolute right-[-40px] top-[-40px] opacity-10 pointer-events-none">
-            <Pickaxe size={200} />
+          <div className="absolute right-[-20px] bottom-[-20px] opacity-[0.03] pointer-events-none rotate-12">
+            <Layers size={320} />
           </div>
         </div>
 
         {/* Info Cards Side */}
-        <div className="space-y-6">
-          <div className="bg-[var(--surface-800)] border border-[var(--surface-600)] rounded-2xl p-6">
-            <div className="flex items-center gap-3 text-[var(--text-muted)] mb-3">
-              <Calendar size={18} />
-              <h3 className="text-sm font-semibold uppercase tracking-wider">Next Withdrawal</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
+          <div className="bg-[var(--surface-800)] border border-[var(--surface-600)] rounded-[24px] p-6 relative overflow-hidden group hover:border-[var(--color-accent)]/50 transition-colors">
+            <div className="flex items-center gap-3 text-[var(--text-muted)] mb-4">
+              <div className="p-2 bg-white/5 rounded-lg">
+                <Calendar size={18} />
+              </div>
+              <h3 className="text-xs font-black uppercase tracking-widest">Liquidity Cycle</h3>
             </div>
-            <p className="text-white font-medium">{nextWithdrawal}</p>
-            {!isPremium && <p className="text-xs text-[var(--gold-600)] mt-2">Min ₦{planData.withdrawalThreshold.toLocaleString()}</p>}
+            <p className="text-lg font-bold text-white tracking-tight">{nextWithdrawal}</p>
+            {!isPremium && (
+              <div className="mt-4 pt-4 border-t border-white/5">
+                 <p className="text-[10px] text-[var(--text-muted)] font-black uppercase mb-1">Stability Threshold</p>
+                 <p className="text-sm font-bold text-[var(--color-accent)]">₦{planData.withdrawalThreshold.toLocaleString()}</p>
+              </div>
+            )}
           </div>
 
-          <div className="bg-[var(--surface-800)] border border-[var(--surface-600)] rounded-2xl p-6">
-            <div className="flex items-center gap-3 text-[var(--text-muted)] mb-3">
-              <Banknote size={18} />
-              <h3 className="text-sm font-semibold uppercase tracking-wider">Earning Rate</h3>
+          <div className="bg-[var(--surface-800)] border border-[var(--surface-600)] rounded-[24px] p-6 relative overflow-hidden group hover:border-[var(--color-earn)]/50 transition-colors">
+            <div className="flex items-center gap-3 text-[var(--text-muted)] mb-4">
+              <div className="p-2 bg-white/5 rounded-lg">
+                <Activity size={18} />
+              </div>
+              <h3 className="text-xs font-black uppercase tracking-widest">Protocol Yield</h3>
             </div>
-            <p className="text-white font-medium">₦ {planData.earningPerHour} <span className="text-[var(--text-muted)] text-sm">/ hr</span></p>
-            <p className="text-[var(--green-500)] text-xs mt-1 mono-figure">+₦{(planData.earningPerHour / 3600).toFixed(4)} / sec</p>
+            <div className="flex items-baseline gap-2">
+               <p className="text-2xl font-black text-white mono-figure tracking-tighter">₦ {planData.earningPerHour}</p>
+               <span className="text-[10px] text-[var(--text-muted)] font-bold uppercase">/ Hour</span>
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+               <span className="flex h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+               <p className="text-green-500 font-bold text-[10px] uppercase tracking-widest mono-figure">+₦{(planData.earningPerHour / 3600).toFixed(4)} Per Tick</p>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Referral Link Quick Access */}
+      <div className="bg-gradient-to-r from-indigo-500/10 via-[var(--surface-800)] to-blue-500/10 border border-white/5 rounded-[24px] p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+         <div className="flex items-center gap-4 text-center md:text-left">
+            <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+               <Zap size={24} className="text-[var(--color-accent)]" />
+            </div>
+            <div>
+               <h4 className="font-bold text-white tracking-tight">Boost Protocol Liquidity</h4>
+               <p className="text-xs text-[var(--text-muted)]">Invite new validators and earn 5% on their generated yield.</p>
+            </div>
+         </div>
+         <button className="px-6 py-3 bg-[var(--surface-700)] hover:bg-[var(--surface-600)] text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all border border-white/5 active:scale-95">
+            Copy Affiliate ID
+         </button>
+      </div>
+
       {/* Games Strip */}
-      <div className="bg-[var(--surface-800)] border border-[var(--surface-600)] rounded-2xl p-6 pt-2">
+      <div className="bg-[var(--surface-800)] border border-[var(--surface-600)] rounded-[32px] p-6 pt-2">
         <GamesFeedPreview earningsPerMinute={planData.gameEarningsPerMinute} />
       </div>
 

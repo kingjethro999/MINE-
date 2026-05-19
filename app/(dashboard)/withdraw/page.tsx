@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
 import { PLANS, PlanId } from "@/lib/plans";
-import { CreditCard, History } from "lucide-react";
+import { CreditCard, History, ShieldCheck, Activity, Landmark } from "lucide-react";
 import WithdrawForm from "@/components/withdraw/WithdrawForm";
 
 export default async function WithdrawPage() {
@@ -27,85 +27,100 @@ export default async function WithdrawPage() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header>
-        <h1 className="text-3xl font-bold text-white mb-2">Withdraw Funds</h1>
-        <p className="text-[var(--text-secondary)]">Transfer your MINE$ earnings to your local bank account.</p>
+        <h1 className="text-3xl font-black text-white mb-2 tracking-tight">Protocol Settlement</h1>
+        <p className="text-[var(--text-secondary)] font-medium">Reconcile your accrued staking yield and bridge MINE$ to physical liquidity.</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
+
         {/* Request Form */}
-        <div className="bg-[var(--surface-800)] border border-[var(--surface-600)] rounded-2xl p-8 relative card-lift">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-white">Create Request</h2>
-            <div className="px-3 py-1 bg-[var(--surface-900)] border border-[var(--gold-700)] rounded-full text-[var(--gold-400)] text-xs font-bold mono-figure flex items-center gap-2">
-              <CreditCard size={14} /> Bal: ₦{user.coinsBalance.toFixed(2)}
+        <div className="bg-[var(--surface-800)] border border-[var(--surface-600)] rounded-[32px] p-8 relative shadow-2xl overflow-hidden card-lift">
+          <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+            <Landmark size={120} />
+          </div>
+
+          <div className="flex justify-between items-center mb-10">
+            <h2 className="text-xl font-black text-white tracking-tight uppercase">Initiate Settlement</h2>
+            <div className="px-4 py-2 bg-black/40 border border-white/5 rounded-2xl text-[var(--color-accent)] text-xs font-black mono-figure flex items-center gap-2 shadow-inner">
+              <Activity size={14} className="animate-pulse" /> BAL: ₦{user.coinsBalance.toLocaleString()}
             </div>
           </div>
 
           {!meetsDownlineRequirement && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6">
-              <p className="text-sm text-[var(--color-danger)] font-medium">
-                You need at least {planData.minDownlines} downlines to withdraw on the {user.plan} plan. 
-                You currently have {downlineCount} downline{downlineCount !== 1 ? "s" : ""}.
+            <div className="bg-red-500/10 border border-red-500/10 rounded-2xl p-4 mb-8 flex items-start gap-3">
+              <ShieldCheck size={18} className="text-red-500 shrink-0 mt-0.5" />
+              <p className="text-[11px] text-red-500 font-bold leading-relaxed">
+                Liquidity Safeguard: You require at least <span className="underline">{planData.minDownlines} active affiliates</span> to verify your node's exit liquidity on the {user.plan} hierarchy.
+                Progress: {downlineCount}/{planData.minDownlines}.
               </p>
             </div>
           )}
 
           {!canWithdraw && user.plan !== "PREMIUM" && meetsDownlineRequirement && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6">
-              <p className="text-sm text-[var(--color-danger)] font-medium">
-                You must reach the ₦{planData.withdrawalThreshold.toLocaleString()} threshold to withdraw on the {user.plan} plan.
+            <div className="bg-amber-500/10 border border-amber-500/10 rounded-2xl p-4 mb-8 flex items-start gap-3">
+              <Activity size={18} className="text-amber-500 shrink-0 mt-0.5" />
+              <p className="text-[11px] text-amber-500 font-bold leading-relaxed">
+                Threshold Requirement: To maintain protocol stability, a minimum yield of <span className="underline font-black">₦{planData.withdrawalThreshold.toLocaleString()}</span> must be accrued before reconciliation on your current node tier.
               </p>
             </div>
           )}
 
-          <WithdrawForm
-            userId={user.id}
-            coinsBalance={user.coinsBalance}
-            minWithdrawal={planData.withdrawalThreshold}
-            planName={user.plan}
-            downlineCount={downlineCount}
-            minDownlines={planData.minDownlines}
-            defaultBankCode={user.bankCode || undefined}
-            defaultBankName={user.bankName || undefined}
-            defaultAccountNumber={user.bankAccountNumber || undefined}
-            defaultAccountName={user.bankAccountName || undefined}
-          />
-          
-          <p className="text-center text-xs text-[var(--text-muted)] mt-4">
-            Transfers processed in {planData.disbursementDays} Day(s)
-          </p>
+          <div className="relative z-10">
+            <WithdrawForm
+              userId={user.id}
+              coinsBalance={user.coinsBalance}
+              minWithdrawal={planData.withdrawalThreshold}
+              planName={user.plan}
+              downlineCount={downlineCount}
+              minDownlines={planData.minDownlines}
+              defaultBankCode={user.bankCode || undefined}
+              defaultBankName={user.bankName || undefined}
+              defaultAccountNumber={user.bankAccountNumber || undefined}
+              defaultAccountName={user.bankAccountName || undefined}
+            />
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)]">
+            <span>Est. Settlement Time</span>
+            <span className="text-white">{planData.disbursementDays < 1 ? "< 12 HOURS" : `${planData.disbursementDays} CYCLE(S)`}</span>
+          </div>
         </div>
 
         {/* Recent History */}
-        <div className="bg-[var(--surface-800)] border border-[var(--surface-600)] rounded-2xl overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-[var(--surface-600)] flex items-center gap-3">
-            <History className="text-[var(--gold-400)]" size={20} />
-            <h3 className="text-lg font-bold text-white">Recent Requests</h3>
+        <div className="bg-[var(--surface-800)] border border-[var(--surface-600)] rounded-[32px] overflow-hidden flex flex-col shadow-xl">
+          <div className="p-8 border-b border-white/5 bg-black/10 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <History className="text-[var(--color-accent)]" size={20} />
+              <h3 className="text-lg font-black text-white tracking-tight uppercase">Ledger History</h3>
+            </div>
+            <span className="text-[10px] font-black px-2 py-0.5 bg-white/5 text-[var(--text-muted)] rounded">LAST 5 DATA</span>
           </div>
-          
-          <div className="flex-1 overflow-y-auto p-2">
+
+          <div className="flex-1 overflow-y-auto">
             {user.withdrawals.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-[var(--text-muted)] p-8 text-center text-sm">
-                No withdrawal requests found.
+              <div className="h-full flex flex-col items-center justify-center text-[var(--text-muted)] p-12 text-center">
+                <Activity size={40} className="mb-4 opacity-10" />
+                <p className="text-xs font-bold uppercase tracking-widest">No active settlement traces found</p>
               </div>
             ) : (
-              <ul className="divide-y divide-[var(--surface-600)] px-4">
+              <ul className="divide-y divide-white/5 px-6">
                 {user.withdrawals.map((w) => (
-                  <li key={w.id} className="py-4">
-                    <div className="flex justify-between items-start mb-1">
-                      <span className="font-bold text-white mono-figure">₦ {w.amount.toLocaleString()}</span>
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm ${
-                        w.status === "PENDING" ? "bg-[var(--surface-600)] text-white" :
-                        w.status === "APPROVED" ? "bg-[var(--gold-600)] text-black" :
-                        w.status === "DISBURSED" ? "bg-[var(--green-600)] text-white" :
-                        "bg-[var(--color-danger)] text-white"
-                      }`}>
+                  <li key={w.id} className="py-6 group hover:bg-white/[0.02] transition-colors -mx-6 px-6">
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="font-black text-white text-lg mono-figure tracking-tighter">₦ {w.amount.toLocaleString()}</span>
+                      <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-lg ${w.status === "PENDING" ? "bg-white/10 text-white" :
+                          w.status === "APPROVED" ? "bg-[var(--color-accent)] text-[#0a0f0d]" :
+                            w.status === "DISBURSED" ? "bg-green-500 text-white" :
+                              "bg-red-500 text-white"
+                        }`}>
                         {w.status}
                       </span>
                     </div>
-                    <div className="flex justify-between items-end text-xs text-[var(--text-muted)]">
-                      <span>{w.bankName} ending in ••{w.accountNumber.slice(-3)}</span>
+                    <div className="flex justify-between items-end text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
+                      <span className="flex items-center gap-1.5 font-mono">
+                        <CreditCard size={12} className="opacity-50" />
+                        {w.bankName} ••{w.accountNumber.slice(-3)}
+                      </span>
                       <span>{w.requestedAt.toLocaleDateString()}</span>
                     </div>
                   </li>
