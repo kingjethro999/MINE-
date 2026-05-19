@@ -21,6 +21,7 @@ model User {
   bankCode          String?       // e.g., "044" for Access Bank
   activePlanPurchased Boolean     @default(false)
   showAds           Boolean       @default(true)     // Premium users can disable ads
+  lastStakingSync   DateTime      @default(now())
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
@@ -46,6 +47,7 @@ model MiningSession {
   id          String    @id @default(cuid())
   userId      String
   startedAt   DateTime  @default(now())
+  lastSyncAt  DateTime  @default(now())
   endedAt     DateTime?
   durationSec Int?
   earned      Float?

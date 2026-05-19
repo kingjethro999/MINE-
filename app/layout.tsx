@@ -4,6 +4,9 @@ import Script from "next/script";
 import "./globals.css";
 import { Toaster } from "sonner";
 import ForceDarkMode from "@/components/layout/ForceDarkMode";
+import { auth } from "@/auth";
+import prisma from "@/lib/db";
+import NextTopLoader from "nextjs-toploader";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -24,8 +27,8 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mines Platform",
-  description: "Mine MINE$ and earn real naira",
+  title: "MINE$ Protocol",
+  description: "Stake MINE$ and earn real Naira through our decentralized yield protocol.",
   icons: {
     icon: "/icon.png",
     apple: "/icon.png",
@@ -33,16 +36,27 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Mines Platform",
+    title: "MINE$ Protocol",
   },
   referrer: "no-referrer-when-downgrade",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+  let showAds = true; // default: show ads for guests
+
+  if (session?.user?.id) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { showAds: true },
+    });
+    if (user) showAds = user.showAds;
+  }
+
   return (
     <html
       lang="en"
@@ -51,8 +65,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ForceDarkMode />
-        <Script id="ads-script" strategy="lazyOnload">
-          {`(function(drqr){
+        <NextTopLoader color="var(--gold-500)" height={3} showSpinner={false} shadow="0 0 10px #d4af37,0 0 5px #d4af37" />
+        {showAds && (
+          <Script id="ads-script" strategy="lazyOnload">
+            {`(function(drqr){
 var d = document,
     s = d.createElement('script'),
     l = d.scripts[d.scripts.length - 1];
@@ -62,10 +78,12 @@ s.async = true;
 s.referrerPolicy = 'no-referrer-when-downgrade';
 l.parentNode.insertBefore(s, l);
 })({})`}
-        </Script>
+          </Script>
+        )}
         {children}
         <Toaster richColors position="top-center" />
       </body>
     </html>
   );
 }
+
