@@ -1,53 +1,76 @@
-const { Client } = require('pg');
-const fs = require('fs');
-const path = require('path');
+const { Client } = require("pg");
+const fs = require("fs");
+const path = require("path");
+const { randomUUID } = require("crypto");
 
-// Basic .env loader
-const envPath = path.join(__dirname, '../.env');
+const envPath = path.join(__dirname, "../.env");
 if (fs.existsSync(envPath)) {
-  const envContent = fs.readFileSync(envPath, 'utf8');
-  envContent.split('\n').forEach(line => {
-    const [key, value] = line.split('=');
-    if (key && value) {
-      process.env[key.trim()] = value.trim().replace(/^"|"$/g, '');
-    }
-  });
+  fs.readFileSync(envPath, "utf8")
+    .split("\n")
+    .forEach((line) => {
+      const match = line.match(/^([^#=]+)=(.*)$/);
+      if (match) {
+        process.env[match[1].trim()] = match[2].trim().replace(/^"|"$/g, "");
+      }
+    });
 }
 
+function getConnectionString() {
+  const raw = process.env.DATABASE_URL || "";
+  return raw.replace(/[?&]sslmode=[^&]*/g, "").replace(/\?$/, "");
+}
 
 async function main() {
-  const email = 'jethrojerrybj@gmail.com';
-  const password = 'Seun5757@';
-  
+  const email = "jethrojerrybj@gmail.com";
+  const password = "Seun5757@";
+  const name = "David Olaoluwa";
+
   const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.DATABASE_URL?.includes('render.com') ? { rejectUnauthorized: false } : false
+    connectionString: getConnectionString(),
+    ssl: { rejectUnauthorized: false },
   });
 
   try {
     await client.connect();
-    console.log(`Connected to database. Seeding test user: ${email}...`);
+    console.log(`Connected. Seeding: ${email}`);
 
-    // Check if user exists
-    const res = await client.query('SELECT id FROM "User" WHERE email = $1', [email]);
-    
-    if (res.rows.length > 0) {
-      console.log('User exists, updating...');
+    const existing = await client.query('SELECT id FROM "User" WHERE email = $1', [email]);
+
+    if (existing.rows.length > 0) {
       await client.query(
-        'UPDATE "User" SET plan = $1, "activePlanPurchased" = $2, "passwordHash" = $3 WHERE email = $4',
-        ['PREMIUM', true, password, email]
+        `UPDATE "User" SET
+          plan = $1,
+          "activePlanPurchased" = $2,
+          "passwordHash" = $3,
+          "showAds" = $4,
+          "isAdmin" = $5,
+          "updatedAt" = NOW()
+        WHERE email = $6`,
+        ["PREMIUM", true, password, false, true, email]
       );
+      console.log("Updated existing user (PREMIUM, showAds=false, isAdmin=true)");
     } else {
-      console.log('Creating new user...');
+      const id = randomUUID();
       await client.query(
-        'INSERT INTO "User" (id, email, name, "passwordHash", plan, "activePlanPurchased", "isAdmin", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())',
-        ['test-user-id-' + Date.now(), email, 'Test Administrator', password, 'PREMIUM', true, true]
+        `INSERT INTO "User" (
+          id, email, name, "passwordHash", plan,
+          "activePlanPurchased", "isAdmin", "showAds",
+          "coinsBalance", "totalEarned", "createdAt", "updatedAt"
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 0, 0, NOW(), NOW())`,
+        [id, email, name, password, "PREMIUM", true, true, false]
       );
+      console.log("Created new user:", id);
     }
 
-    console.log('Test user seeded successfully!');
+    const check = await client.query(
+      'SELECT email, plan, "showAds", "activePlanPurchased", "isAdmin" FROM "User" WHERE email = $1',
+      [email]
+    );
+    console.log("User record:", check.rows[0]);
+    console.log("Done. Login with:", email);
   } catch (err) {
-    console.error('Error seeding user:', err);
+    console.error("Seed failed:", err);
+    process.exit(1);
   } finally {
     await client.end();
   }

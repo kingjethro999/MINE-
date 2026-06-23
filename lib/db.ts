@@ -2,7 +2,13 @@ import { PrismaClient } from "@prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
 
 const prismaClientSingleton = () => {
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+  const rawUrl = process.env.DATABASE_URL ?? "";
+  const connectionString = rawUrl.replace(/[?&]sslmode=[^&]*/g, "").replace(/\?$/, "");
+
+  const adapter = new PrismaPg({
+    connectionString,
+    ssl: { rejectUnauthorized: false },
+  })
   return new PrismaClient({ adapter })
 }
 

@@ -41,8 +41,8 @@ export default async function GamesPage({
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header>
-        <h1 className="text-3xl font-black text-white mb-2 tracking-tight uppercase">Simulation Training</h1>
-        <p className="text-[var(--text-secondary)] font-medium">Train your validator nodes through high-frequency neural simulations to earn extra yield at ₦{planData.gameEarningsPerMinute}/min.</p>
+        <h1 className="text-3xl font-black text-white mb-2 tracking-tight uppercase">Games</h1>
+        <p className="text-[var(--text-secondary)] font-medium">Play games to earn ${planData.gameEarningsPerMinuteUsd}/min on your plan.</p>
       </header>
 
       {activeGame ? (
@@ -55,7 +55,7 @@ export default async function GamesPage({
             <GameMonetizeEmbed
                 gameId={activeGame.id}
                 gameUrl={activeGame.url}
-                coinsPerMinute={planData.gameEarningsPerMinute}
+                coinsPerMinute={planData.gameEarningsPerMinuteUsd}
             />
           </div>
         </div>
@@ -91,8 +91,8 @@ export default async function GamesPage({
                  <ShieldCheck size={24} className="text-[var(--color-accent)]" />
               </div>
               <div>
-                 <h4 className="font-black text-white text-sm uppercase tracking-widest">Incentivized Training</h4>
-                 <p className="text-[10px] text-[var(--text-muted)] leading-relaxed font-bold uppercase tracking-wider opacity-60">Every minute of active simulation generates supplementary protocol yield. Credits are reconciled in real-time upon simulation completion.</p>
+                 <h4 className="font-black text-white text-sm uppercase tracking-widest">Earn While You Play</h4>
+                 <p className="text-[10px] text-[var(--text-muted)] leading-relaxed font-bold uppercase tracking-wider opacity-60">Every minute of active play earns USD credited to your balance. Boosts multiply your game earnings.</p>
               </div>
            </div>
         </div>

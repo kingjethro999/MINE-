@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import ForceDarkMode from "@/components/layout/ForceDarkMode";
 import { auth } from "@/auth";
 import prisma from "@/lib/db";
+import { shouldShowSiteAds } from "@/lib/plans";
 import NextTopLoader from "nextjs-toploader";
 
 const syne = Syne({
@@ -27,8 +28,8 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MINE$ Protocol",
-  description: "Stake MINE$ and earn real Naira through our decentralized yield protocol.",
+  title: "MINE$ — Watch & Earn",
+  description: "Watch videos and play games to earn dollars. Withdraw to your Nigerian bank account in Naira.",
   icons: {
     icon: "/icon.png",
     apple: "/icon.png",
@@ -52,9 +53,9 @@ export default async function RootLayout({
   if (session?.user?.id) {
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { showAds: true },
+      select: { showAds: true, plan: true },
     });
-    if (user) showAds = user.showAds;
+    if (user) showAds = shouldShowSiteAds(user.plan, user.showAds);
   }
 
   return (

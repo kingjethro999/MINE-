@@ -100,7 +100,7 @@ export default function GameMonetizeEmbed({
         <div className="flex items-center gap-2 bg-[var(--gold-500)]/10 px-4 py-2 rounded-lg border border-[var(--gold-500)]/20">
           <Coins size={16} className="text-[var(--gold-400)]" />
           <span className="text-[var(--gold-400)] font-bold tabular-nums">
-            +₦{sessionCoins.toFixed(2)}
+            +${sessionCoins.toFixed(2)}
           </span>
           <span className="text-[var(--gold-400)]/60 text-xs hidden sm:inline ml-1">this session</span>
         </div>

@@ -49,6 +49,16 @@ export async function PATCH(req: Request) {
   const updateData: Record<string, unknown> = {};
 
   if (typeof showAds === "boolean") {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { plan: true },
+    });
+    if (user?.plan !== "PREMIUM") {
+      return Response.json(
+        { success: false, error: "Only Premium users can change ad settings" },
+        { status: 403 }
+      );
+    }
     updateData.showAds = showAds;
   }
   if (bankName !== undefined) updateData.bankName = bankName;

@@ -4,10 +4,13 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import BankSelect, { Bank } from "@/components/ui/BankSelect";
+import CurrencyDisplay from "@/components/ui/CurrencyDisplay";
 
 interface WithdrawFormProps {
   userId: string;
-  coinsBalance: number;
+  coinsBalanceNgn: number;
+  balanceUsd: number;
+  exchangeRate: number | null;
   minWithdrawal: number;
   planName: string;
   downlineCount: number;
@@ -20,7 +23,9 @@ interface WithdrawFormProps {
 
 export default function WithdrawForm({
   userId,
-  coinsBalance,
+  coinsBalanceNgn,
+  balanceUsd,
+  exchangeRate,
   minWithdrawal,
   planName,
   downlineCount,
@@ -111,13 +116,18 @@ export default function WithdrawForm({
       return;
     }
 
+    if (!exchangeRate) {
+      toast.error("Exchange rate not available. Please refresh the page.");
+      return;
+    }
+
     const amountNum = parseFloat(amount);
     if (amountNum < minWithdrawal) {
       toast.error(`Minimum withdrawal is ₦${minWithdrawal.toLocaleString()}`);
       return;
     }
 
-    if (amountNum > coinsBalance) {
+    if (amountNum > coinsBalanceNgn) {
       toast.error("Insufficient balance");
       return;
     }
@@ -130,7 +140,8 @@ export default function WithdrawForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId,
-          amount: amountNum,
+          amountNgn: amountNum,
+          exchangeRate,
           accountNumber,
           accountName,
           bankName,
@@ -157,7 +168,7 @@ export default function WithdrawForm({
   }
 
   const meetsDownlineReq = downlineCount >= minDownlines;
-  const canWithdraw = coinsBalance >= minWithdrawal && meetsDownlineReq;
+  const canWithdraw = coinsBalanceNgn >= minWithdrawal && meetsDownlineReq && !!exchangeRate;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -170,14 +181,17 @@ export default function WithdrawForm({
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           min={minWithdrawal}
-          max={coinsBalance}
+          max={coinsBalanceNgn}
           required
           placeholder={`Min: ₦${minWithdrawal.toLocaleString()}`}
           className="w-full bg-[var(--surface-900)] border border-[var(--surface-600)] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[var(--gold-500)] transition-colors mono-figure"
         />
-        <p className="text-xs text-[var(--text-muted)] mt-1">
-          Available: ₦{coinsBalance.toLocaleString()}
-        </p>
+        <div className="flex items-center justify-between mt-1">
+          <p className="text-xs text-[var(--text-muted)]">
+            Available: ₦{coinsBalanceNgn.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+          </p>
+          <CurrencyDisplay amountUsd={balanceUsd} size="sm" className="!text-xs" />
+        </div>
       </div>
 
       <div>
@@ -251,7 +265,8 @@ export default function WithdrawForm({
       {!meetsDownlineReq && (
         <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 mb-4">
           <p className="text-xs text-amber-400 font-medium">
-            Need {minDownlines - downlineCount} more downline{minDownlines - downlineCount !== 1 ? "s" : ""} to unlock withdrawals
+            Need {minDownlines - downlineCount} more downline
+            {minDownlines - downlineCount !== 1 ? "s" : ""} to unlock withdrawals
           </p>
         </div>
       )}
@@ -261,7 +276,11 @@ export default function WithdrawForm({
         disabled={!canWithdraw || !validated || submitting}
         className="w-full bg-[var(--gold-500)] disabled:bg-[var(--surface-600)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed text-black font-bold text-sm tracking-widest uppercase py-4 rounded-lg mt-6 transition-colors"
       >
-        {submitting ? "Processing..." : !meetsDownlineReq ? `Need ${minDownlines - downlineCount} More Downlines` : "Submit Request"}
+        {submitting
+          ? "Processing..."
+          : !meetsDownlineReq
+            ? `Need ${minDownlines - downlineCount} More Downlines`
+            : "Submit Request"}
       </button>
     </form>
   );

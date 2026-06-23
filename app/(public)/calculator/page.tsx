@@ -8,8 +8,8 @@ export default function CalculatorPage() {
             <Calculator size={14} />
             Yield Projections
          </div>
-         <h1 className="font-[family-name:var(--font-syne)] text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">Dynamic Yield Calculator</h1>
-         <p className="text-lg text-[var(--text-secondary)]">Estimate your protocol rewards based on network participation layer and chosen validator node tier.</p>
+         <h1 className="font-[family-name:var(--font-syne)] text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">Earnings Calculator</h1>
+         <p className="text-lg text-[var(--text-secondary)]">Estimate daily earnings from videos and games based on your plan.</p>
       </div>
 
       <div className="bg-[var(--surface-800)] border border-[var(--surface-600)] p-8 md:p-12 rounded-[32px] shadow-2xl relative overflow-hidden">

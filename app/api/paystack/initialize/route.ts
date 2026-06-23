@@ -1,7 +1,8 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/db";
 import { initializePayment } from "@/lib/paystack";
-import { PLANS } from "@/lib/plans";
+import { PLANS, getUpgradePrice, planIdFromEnum } from "@/lib/plans";
+import { buildPlanPaymentRef } from "@/lib/plan-payment";
 import { redirect } from "next/navigation";
 
 export async function POST(req: Request) {
@@ -13,14 +14,25 @@ export async function POST(req: Request) {
   const planId = formData.get("plan") as string;
 
   if (type === "PLAN_PURCHASE" || type === "PLAN_UPGRADE") {
-    const targetPlan = PLANS[planId.toLowerCase() as keyof typeof PLANS];
-    if (!targetPlan) return redirect("/onboarding?error=invalid_plan");
+    const targetPlanId = planIdFromEnum(planId);
+    const targetPlan = PLANS[targetPlanId];
+    if (!targetPlan) {
+      return redirect(type === "PLAN_UPGRADE" ? "/upgrade?error=invalid_plan" : "/onboarding?error=invalid_plan");
+    }
 
-    // In a full implementation we calculate differential top-up for UPGRADE here.
-    // Simplifying to full price for brevity.
-    const price = targetPlan.price;
+    const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+    if (!user) return new Response("Unauthorized", { status: 401 });
 
-    const ref = `TX_${Date.now()}_${session.user.id}`;
+    let price: number = targetPlan.price;
+    if (type === "PLAN_UPGRADE") {
+      const upgradePrice = getUpgradePrice(planIdFromEnum(user.plan), targetPlanId);
+      if (upgradePrice === null || upgradePrice <= 0) {
+        return redirect("/upgrade?error=invalid_upgrade");
+      }
+      price = upgradePrice;
+    }
+
+    const ref = buildPlanPaymentRef(planId, session.user.id);
 
     // Record pending transaction
     await prisma.payment.create({
@@ -38,7 +50,7 @@ export async function POST(req: Request) {
       redirect(pstk.data.authorization_url);
     }
     console.error("Paystack initialize failed:", pstk.message ?? pstk);
-    redirect("/onboarding?error=paystack_init_failed");
+    redirect(type === "PLAN_UPGRADE" ? "/upgrade?error=paystack_init_failed" : "/onboarding?error=paystack_init_failed");
   }
 
   redirect("/dashboard");

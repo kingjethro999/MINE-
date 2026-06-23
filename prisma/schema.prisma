@@ -7,34 +7,32 @@ datasource db {
 }
 
 model User {
-  id                String        @id @default(cuid())
-  email             String        @unique
-  name              String
-  passwordHash      String
-  plan              Plan          @default(BASIC)
-  isAdmin           Boolean       @default(false)
-  coinsBalance      Float         @default(0)
-  totalEarned       Float         @default(0)
-  bankAccountNumber String?
-  bankAccountName   String?
-  bankName          String?
-  bankCode          String?       // e.g., "044" for Access Bank
-  activePlanPurchased Boolean     @default(false)
-  showAds           Boolean       @default(true)     // Premium users can disable ads
-  lastStakingSync   DateTime      @default(now())
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  id                  String        @id @default(cuid())
+  email               String        @unique
+  name                String
+  passwordHash        String
+  plan                Plan          @default(BASIC)
+  isAdmin             Boolean       @default(false)
+  coinsBalance        Float         @default(0) // stored in USD
+  totalEarned         Float         @default(0) // stored in USD
+  bankAccountNumber   String?
+  bankAccountName     String?
+  bankName            String?
+  bankCode            String?
+  activePlanPurchased Boolean       @default(false)
+  showAds             Boolean       @default(true)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 
-  miningSessions    MiningSession[]
-  withdrawals       Withdrawal[]
-  playSessions      PlaySession[]
-  payments          Payment[]
-  axesPurchases     AxesPurchase[]
-  
-  // Referrals
-  referralsMade     Referral[]        @relation("ReferrerReferrals")
-  referralReceived  Referral?         @relation("RefereeReferral")
-  referralEarnings  ReferralEarning[]
+  playSessions        PlaySession[]
+  payments            Payment[]
+  boostPurchases      BoostPurchase[]
+  videoWatches        VideoWatch[]
+  withdrawals         Withdrawal[]
+
+  referralsMade       Referral[]        @relation("ReferrerReferrals")
+  referralReceived    Referral?         @relation("RefereeReferral")
+  referralEarnings    ReferralEarning[]
 }
 
 enum Plan {
@@ -43,23 +41,32 @@ enum Plan {
   PREMIUM
 }
 
-model MiningSession {
-  id          String    @id @default(cuid())
+model VideoWatch {
+  id            String   @id @default(cuid())
+  userId        String
+  pexelsVideoId Int
+  title         String?
+  amountUsd     Float
+  boostMultiplier Float  @default(1)
+  watchedAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+model BoostPurchase {
+  id          String   @id @default(cuid())
   userId      String
-  startedAt   DateTime  @default(now())
-  lastSyncAt  DateTime  @default(now())
-  endedAt     DateTime?
-  durationSec Int?
-  earned      Float?
-  autoMine    Boolean   @default(false)
-  autoDays    Int?
-  user        User      @relation(fields: [userId], references: [id])
+  tier        String
+  purchasedAt DateTime @default(now())
+  expiresAt   DateTime
+  active      Boolean  @default(true)
+  paystackRef String   @unique
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model Withdrawal {
   id            String           @id @default(cuid())
   userId        String
-  amount        Float
+  amount        Float // NGN amount at time of withdrawal
   status        WithdrawalStatus @default(PENDING)
   accountNumber String
   accountName   String
@@ -78,13 +85,14 @@ enum WithdrawalStatus {
 }
 
 model PlaySession {
-  id            String   @id @default(cuid())
-  userId        String
-  gameId        String
-  minutesPlayed Int
-  coinsAwarded  Float
-  createdAt     DateTime @default(now())
-  user          User     @relation(fields: [userId], references: [id])
+  id              String   @id @default(cuid())
+  userId          String
+  gameId          String
+  minutesPlayed   Int
+  coinsAwarded    Float // USD
+  boostMultiplier Float    @default(1)
+  createdAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
 }
 
 model Payment {
@@ -102,6 +110,7 @@ enum PaymentType {
   PLAN_PURCHASE
   PLAN_UPGRADE
   AXES_UPGRADE
+  BOOST_UPGRADE
 }
 
 enum PaymentStatus {
@@ -110,33 +119,22 @@ enum PaymentStatus {
   FAILED
 }
 
-model AxesPurchase {
-  id          String    @id @default(cuid())
-  userId      String
-  tier        String    // "starter" | "advanced" | "elite"
-  purchasedAt DateTime  @default(now())
-  expiresAt   DateTime
-  active      Boolean   @default(true)
-  paystackRef String    @unique
-  user        User      @relation(fields: [userId], references: [id])
-}
-
 model Referral {
-  id           String   @id @default(cuid())
-  referrerId   String
-  refereeId    String   @unique
-  createdAt    DateTime @default(now())
-  referrer     User     @relation("ReferrerReferrals", fields: [referrerId], references: [id])
-  referee      User     @relation("RefereeReferral",  fields: [refereeId],  references: [id])
+  id         String   @id @default(cuid())
+  referrerId String
+  refereeId  String   @unique
+  createdAt  DateTime @default(now())
+  referrer   User     @relation("ReferrerReferrals", fields: [referrerId], references: [id])
+  referee    User     @relation("RefereeReferral", fields: [refereeId], references: [id])
 }
 
 model ReferralEarning {
-  id           String   @id @default(cuid())
-  referrerId   String
-  refereeId    String
-  month        String   // "2026-04" (YYYY-MM)
+  id            String   @id @default(cuid())
+  referrerId    String
+  refereeId     String
+  month         String
   refereeEarned Float
-  commission   Float
-  creditedAt   DateTime @default(now())
-  referrer     User     @relation(fields: [referrerId], references: [id])
+  commission    Float
+  creditedAt    DateTime @default(now())
+  referrer      User     @relation(fields: [referrerId], references: [id])
 }

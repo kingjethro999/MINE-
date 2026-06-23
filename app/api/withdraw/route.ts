@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/db";
 import { PLANS, PlanId } from "@/lib/plans";
+import { fetchUsdToNgnRate, usdToNgn, ngnToUsd } from "@/lib/exchange";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -9,7 +10,8 @@ export async function POST(req: Request) {
   }
 
   let body: {
-    amount: number;
+    amountNgn: number;
+    exchangeRate: number;
     bankName: string;
     bankCode?: string;
     accountNumber: string;
@@ -22,9 +24,9 @@ export async function POST(req: Request) {
     return Response.json({ success: false, error: "Invalid request body" }, { status: 400 });
   }
 
-  const { amount, bankName, bankCode, accountNumber, accountName } = body;
+  const { amountNgn, exchangeRate, bankName, bankCode, accountNumber, accountName } = body;
 
-  if (!amount || !bankName || !accountNumber || !accountName) {
+  if (!amountNgn || !bankName || !accountNumber || !accountName || !exchangeRate) {
     return Response.json({ success: false, error: "Missing required fields" }, { status: 400 });
   }
 
@@ -37,7 +39,7 @@ export async function POST(req: Request) {
   }
 
   const planData = PLANS[user.plan.toLowerCase() as PlanId];
-  const threshold = planData.withdrawalThreshold;
+  const threshold = planData.withdrawalThresholdNgn;
   const downlineCount = user.referralsMade.length;
 
   if (downlineCount < planData.minDownlines) {
@@ -50,26 +52,26 @@ export async function POST(req: Request) {
     );
   }
 
-  if (amount < threshold) {
+  if (amountNgn < threshold) {
     return Response.json(
       { success: false, error: `Minimum withdrawal is ₦${threshold.toLocaleString()}` },
       { status: 400 }
     );
   }
 
-  if (amount > user.coinsBalance) {
-    return Response.json(
-      { success: false, error: "Insufficient balance" },
-      { status: 400 }
-    );
+  const balanceNgn = usdToNgn(user.coinsBalance, exchangeRate);
+  if (amountNgn > balanceNgn) {
+    return Response.json({ success: false, error: "Insufficient balance" }, { status: 400 });
   }
+
+  const amountUsd = ngnToUsd(amountNgn, exchangeRate);
 
   try {
     await prisma.$transaction([
       prisma.user.update({
         where: { id: user.id },
         data: {
-          coinsBalance: { decrement: amount },
+          coinsBalance: { decrement: amountUsd },
           bankName,
           bankCode: bankCode || null,
           bankAccountNumber: accountNumber,
@@ -79,7 +81,7 @@ export async function POST(req: Request) {
       prisma.withdrawal.create({
         data: {
           userId: user.id,
-          amount,
+          amount: amountNgn,
           bankName,
           accountNumber,
           accountName,

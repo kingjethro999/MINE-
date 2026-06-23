@@ -4,7 +4,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Network, Pickaxe, Axe, Gamepad2, CreditCard, MoreHorizontal, X, LogOut, ArrowUpCircle, ShieldCheck, Settings } from "lucide-react";
+import {
+  Network,
+  Video,
+  Zap,
+  Gamepad2,
+  CreditCard,
+  MoreHorizontal,
+  X,
+  LogOut,
+  ArrowUpCircle,
+  ShieldCheck,
+  Settings,
+  History,
+} from "lucide-react";
 import { signOut } from "next-auth/react";
 
 interface MobileNavProps {
@@ -14,7 +27,7 @@ interface MobileNavProps {
 
 const pinnedItems = [
   { href: "/dashboard", label: "Home", icon: Network },
-  { href: "/mine", label: "Mine", icon: Pickaxe },
+  { href: "/watch", label: "Watch", icon: Video },
   { href: "/games", label: "Games", icon: Gamepad2 },
   { href: "/withdraw", label: "Withdraw", icon: CreditCard },
 ];
@@ -28,7 +41,8 @@ export default function MobileNav({ plan, isAdmin }: MobileNavProps) {
 
   const moreItems = [
     ...(isPremium ? [] : [{ href: "/upgrade", label: "Upgrade", icon: ArrowUpCircle }]),
-    { href: "/axes", label: "Axes", icon: Axe },
+    { href: "/boosts", label: "Boosts", icon: Zap },
+    { href: "/history", label: "History", icon: History },
     { href: "/referral", label: "Referral", icon: Network },
     { href: "/settings", label: "Settings", icon: Settings },
     ...(isAdmin ? [{ href: "/admin/users", label: "Admin", icon: ShieldCheck }] : []),
@@ -95,11 +109,7 @@ export default function MobileNav({ plan, isAdmin }: MobileNavProps) {
                     >
                       <Icon
                         size={20}
-                        className={
-                          isActive
-                            ? "text-[#0a0f0d]"
-                            : "text-[var(--text-muted)]"
-                        }
+                        className={isActive ? "text-[#0a0f0d]" : "text-[var(--text-muted)]"}
                       />
                       <span className="text-sm font-medium">{label}</span>
                     </div>
@@ -139,28 +149,20 @@ export default function MobileNav({ plan, isAdmin }: MobileNavProps) {
                     <motion.div
                       layoutId="mobileActive"
                       className="absolute inset-x-1 inset-y-0 bg-[var(--gold-500)]/10 rounded-xl"
-                      transition={{
-                        type: "spring",
-                        bounce: 0.25,
-                        duration: 0.4,
-                      }}
+                      transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
                     />
                   )}
                   <div className="relative z-10">
                     <Icon
                       size={22}
                       className={
-                        isActive
-                          ? "text-[var(--gold-500)]"
-                          : "text-[var(--text-muted)]"
+                        isActive ? "text-[var(--gold-500)]" : "text-[var(--text-muted)]"
                       }
                     />
                   </div>
                   <span
                     className={`relative z-10 text-[10px] font-semibold leading-none tracking-wide ${
-                      isActive
-                        ? "text-[var(--gold-500)]"
-                        : "text-[var(--text-muted)]"
+                      isActive ? "text-[var(--gold-500)]" : "text-[var(--text-muted)]"
                     }`}
                   >
                     {label}
@@ -187,17 +189,13 @@ export default function MobileNav({ plan, isAdmin }: MobileNavProps) {
               <MoreHorizontal
                 size={22}
                 className={
-                  moreOpen || isMoreActive
-                    ? "text-[var(--gold-500)]"
-                    : "text-[var(--text-muted)]"
+                  moreOpen || isMoreActive ? "text-[var(--gold-500)]" : "text-[var(--text-muted)]"
                 }
               />
             </div>
             <span
               className={`relative z-10 text-[10px] font-semibold leading-none tracking-wide ${
-                moreOpen || isMoreActive
-                  ? "text-[var(--gold-500)]"
-                  : "text-[var(--text-muted)]"
+                moreOpen || isMoreActive ? "text-[var(--gold-500)]" : "text-[var(--text-muted)]"
               }`}
             >
               More

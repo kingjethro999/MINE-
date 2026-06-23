@@ -160,8 +160,8 @@ export default function SettingsPage() {
             <div className="flex-1">
               <p className="text-sm font-medium text-white">Show Ads</p>
               <p className="text-xs text-[var(--text-muted)]">
-                {user.plan === "PREMIUM" 
-                  ? "Premium users see fewer ads" 
+                {user.plan === "PREMIUM"
+                  ? "Premium accounts have ads off by default"
                   : "Upgrade to Premium to disable ads"}
               </p>
             </div>

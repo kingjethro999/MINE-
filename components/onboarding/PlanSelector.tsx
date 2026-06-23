@@ -35,7 +35,7 @@ export default function PlanSelector() {
   return (
     <div className="w-full max-w-5xl space-y-8">
       <div className="text-center mb-8">
-        <p className="text-[var(--text-secondary)] text-sm">Select a plan to activate your mining account</p>
+        <p className="text-[var(--text-secondary)] text-sm">Select a plan to start earning</p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -83,26 +83,20 @@ export default function PlanSelector() {
               <ul className="space-y-4">
                 <li className="flex items-center gap-3 text-sm">
                   <Zap size={16} className="text-green-500" />
-                  <span>Earn <strong className="text-white">₦{p.earningPerHour}/hr</strong></span>
+                  <span>Earn <strong className="text-white">${p.earningPerVideoUsd}/video</strong></span>
                 </li>
                 <li className="flex items-center gap-3 text-sm">
                   <Zap size={16} className="text-green-500" />
-                  <span>Earn <strong className="text-white">₦{p.gameEarningsPerMinute}/min</strong> in games</span>
+                  <span>Earn <strong className="text-white">${p.gameEarningsPerMinuteUsd}/min</strong> in games</span>
                 </li>
                 <li className="flex items-center gap-3 text-sm">
-                  <ShieldCheck size={16} className="text-[var(--gold-500)]" />
-                  <span>{p.withdrawalsPerMonth === Infinity ? 'Unlimited withdrawals' : `${p.withdrawalsPerMonth}x monthly`}</span>
+                  <Zap size={16} className="text-green-500" />
+                  <span><strong className="text-white">{p.dailyVideoLimit} videos/day</strong></span>
                 </li>
-                {p.autoMine && (
+                {id === "premium" && (
                   <li className="flex items-center gap-3 text-sm text-green-400">
                     <Check size={16} />
-                    <span>Auto-mine 24/7</span>
-                  </li>
-                )}
-                {!p.autoMine && (
-                  <li className="flex items-center gap-3 text-sm text-[var(--text-muted)] line-through">
-                    <Check size={16} />
-                    <span>Auto-mine 24/7</span>
+                    <span>Priority withdrawals</span>
                   </li>
                 )}
               </ul>

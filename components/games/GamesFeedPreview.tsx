@@ -39,7 +39,7 @@ export default function GamesFeedPreview({
         <div className="games-feed-header">
           <Gamepad2 size={18} className="text-[var(--gold-400)]" />
           <h2 className="text-lg font-bold">Games — Earn While You Play</h2>
-          <span className="earnings-rate-badge">+₦{earningsPerMinute}/min</span>
+          <span className="earnings-rate-badge">+${earningsPerMinute}/min</span>
         </div>
         <div className="games-strip-outer">
           <div className="games-strip">
