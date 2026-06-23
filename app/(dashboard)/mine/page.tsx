@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
 import { PLANS, PlanId, AXES_TIERS, AxesTierId } from "@/lib/plans";
-import { Lock, Layers } from "lucide-react";
+import { Lock, Power, Zap, Activity, ShieldCheck, Layers } from "lucide-react";
 import StakingTicker from "@/components/staking/StakingTicker";
 import StakingControls from "@/components/staking/StakingControls";
 
@@ -36,8 +36,8 @@ export default async function MinePage() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header>
-        <h1 className="text-3xl font-black text-white mb-2 tracking-tight">Mining session control</h1>
-        <p className="text-[var(--text-secondary)] font-medium">Start or stop your earning session and track your live reward rate.</p>
+        <h1 className="text-3xl font-black text-white mb-2 tracking-tight">Protocol Staking Control</h1>
+        <p className="text-[var(--text-secondary)] font-medium">Manage your validator node's active lifecycle and yield accrual.</p>
       </header>
 
       <div className="max-w-2xl mx-auto">
@@ -87,9 +87,9 @@ export default async function MinePage() {
                  <Lock size={18} className="text-blue-400" />
               </div>
               <div>
-                 <p className="text-xs font-bold text-white mb-1">How this works</p>
+                 <p className="text-xs font-bold text-white mb-1">Staking Security Note</p>
                  <p className="text-[10px] text-[var(--text-muted)] leading-relaxed font-medium">
-                   Rewards only accrue while your session is active. Your plan rate and active axe bonus (if any) determine accumulation speed. No rewards are guaranteed beyond your configured plan rules.
+                   All yield sessions are validated against the protocol liquidity pool. Premature exit may briefly impact your node performance metrics. Ensure your validator remains active for the full duration of the staking cycle for optimal returns.
                  </p>
               </div>
            </div>
