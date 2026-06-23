@@ -3,7 +3,14 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
 import { PLANS, PlanId } from "@/lib/plans";
 import GameMonetizeEmbed from "@/components/games/GameMonetizeEmbed";
-import { Gamepad2, ArrowLeft, Activity, ShieldCheck, Zap } from "lucide-react";
+import { ArrowLeft, Activity, ShieldCheck, Zap } from "lucide-react";
+
+interface GameFeedItem {
+  id?: string;
+  title: string;
+  thumb: string;
+  url?: string;
+}
 
 export default async function GamesPage({
   searchParams
@@ -27,7 +34,7 @@ export default async function GamesPage({
   const gamesData = await gamesResponse.json();
   const games = Array.isArray(gamesData) ? gamesData : [];
 
-  const gamesWithIds = games.map((g: any) => {
+  const gamesWithIds: GameFeedItem[] = games.map((g: GameFeedItem) => {
     let id = g.id;
     if (!id && g.url) {
       const parts = g.url.split('/').filter(Boolean);
@@ -36,32 +43,32 @@ export default async function GamesPage({
     return { ...g, id: id || g.title.replace(/\s+/g, '-').toLowerCase() };
   });
 
-  const activeGame = game ? gamesWithIds.find((g: any) => g.id === game) : null;
+  const activeGame = game ? gamesWithIds.find((g) => g.id === game) : null;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header>
-        <h1 className="text-3xl font-black text-white mb-2 tracking-tight uppercase">Simulation Training</h1>
-        <p className="text-[var(--text-secondary)] font-medium">Train your validator nodes through high-frequency neural simulations to earn extra yield at ₦{planData.gameEarningsPerMinute}/min.</p>
+        <h1 className="text-3xl font-black text-white mb-2 tracking-tight uppercase">Play & earn rewards</h1>
+        <p className="text-[var(--text-secondary)] font-medium">Play partner games and earn up to ₦{planData.gameEarningsPerMinute}/min based on eligible active playtime.</p>
       </header>
 
       {activeGame ? (
         <div className="max-w-5xl mx-auto">
           <a href="/games" className="text-[var(--color-accent)] text-[10px] font-black uppercase tracking-widest hover:text-white mb-6 inline-flex items-center gap-2 transition-colors">
             <ArrowLeft size={14} />
-            Halt Simulation & Return
+            Stop game & go back
           </a>
           <div className="bg-black/40 rounded-[32px] overflow-hidden border border-white/5 shadow-2xl">
             <GameMonetizeEmbed
-                gameId={activeGame.id}
-                gameUrl={activeGame.url}
+                gameId={activeGame.id || ""}
+                gameUrl={activeGame.url || ""}
                 coinsPerMinute={planData.gameEarningsPerMinute}
             />
           </div>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
-          {gamesWithIds.map((game: any) => (
+          {gamesWithIds.map((game) => (
             <a
               key={game.id}
               href={`/games?game=${game.id}`}
@@ -91,8 +98,8 @@ export default async function GamesPage({
                  <ShieldCheck size={24} className="text-[var(--color-accent)]" />
               </div>
               <div>
-                 <h4 className="font-black text-white text-sm uppercase tracking-widest">Incentivized Training</h4>
-                 <p className="text-[10px] text-[var(--text-muted)] leading-relaxed font-bold uppercase tracking-wider opacity-60">Every minute of active simulation generates supplementary protocol yield. Credits are reconciled in real-time upon simulation completion.</p>
+                 <h4 className="font-black text-white text-sm uppercase tracking-widest">Why gameplay earns rewards</h4>
+                 <p className="text-[10px] text-[var(--text-muted)] leading-relaxed font-bold uppercase tracking-wider opacity-60">Some game partners run paid user-acquisition campaigns. When your active playtime qualifies, part of that campaign value can be credited to your rewards balance.</p>
               </div>
            </div>
         </div>
