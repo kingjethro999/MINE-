@@ -1,5 +1,31 @@
 import Image from "next/image";
 import RegisterForm from "@/components/auth/RegisterForm";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Join me on Mine$ and start earning!",
+  description: "I use Mine$ to earn cash playing games and watching videos. Click here to join me and claim your rewards now!",
+  openGraph: {
+    title: "Join me on Mine$ and start earning!",
+    description: "I use Mine$ to earn cash playing games and watching videos. Click here to join me and claim your rewards now!",
+    type: "website",
+    siteName: "Mine$",
+    images: [
+      {
+        url: "/icon.png",
+        width: 150,
+        height: 150,
+        alt: "Mine$ Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Join me on Mine$ and start earning!",
+    description: "I use Mine$ to earn real cash playing games and watching videos. Click here to join me and claim your rewards now!",
+    images: ["/icon.png"],
+  },
+};
 
 export default async function RegisterPage({ params }: { params: Promise<{ referralCode?: string[] }> }) {
   const resolvedParams = await params;

@@ -118,7 +118,7 @@ export default function PlanSelector() {
           onClick={handlePay}
           className="w-full bg-[var(--gold-500)] text-black font-bold text-sm tracking-widest uppercase py-4 rounded-lg hover:bg-[var(--gold-600)] transition-colors shadow-lg shadow-[var(--gold-500)]/20"
         >
-          Pay with Paystack
+          Pay Now
         </button>
         <p className="text-[var(--text-muted)] text-[10px] uppercase tracking-[0.2em] mt-4 font-medium italic">
           Secure Payment • Instant Activation
