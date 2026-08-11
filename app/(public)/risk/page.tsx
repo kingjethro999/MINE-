@@ -9,40 +9,54 @@ export default function RiskDisclaimerPage() {
                Important Notice
             </div>
             <h1 className="font-[family-name:var(--font-syne)] text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">Risk Disclaimer</h1>
-            <p className="text-lg text-[var(--text-secondary)]">Please read this notice carefully before mobilizing assets within the protocol.</p>
+            <p className="text-lg text-[var(--text-secondary)]">Please read this notice carefully before using the platform.</p>
          </div>
 
          <div className="space-y-8 text-[var(--text-secondary)] leading-relaxed text-sm">
             <section>
-               <h3 className="text-xl font-bold text-white mb-3">1. Protocol Liquidity Risks</h3>
+               <h3 className="text-xl font-bold text-white mb-3">1. Earnings Are Not Guaranteed</h3>
                <p className="mb-4">
-                  Interaction with decentralized yield-generation frameworks carries inherent operational risks. Validator node deployment and active participation in the MINE$ Ecosystem utilize smart liquidity channels. Participants acknowledge that sustained protocol yield depends on the continuous flow of transactional volume. In periods of extreme market congestion or low liquidity volume, off-ramp settlements may experience systemic delays.
+                  Rewards earned on Mines are payments for completing activities such as watching videos and playing games. They are not an investment return, salary, or guaranteed income. Your actual earnings depend on your plan, the number of activities you complete, platform availability, and your adherence to these terms. Nothing on the platform is a promise of a specific income.
                </p>
             </section>
 
             <section>
-               <h3 className="text-xl font-bold text-white mb-3">2. Yield Variance</h3>
+               <h3 className="text-xl font-bold text-white mb-3">2. Reward Rates May Change</h3>
                <p className="mb-4">
-                  Projected APYs (Annual Percentage Yield) and base reward accumulation rates (e.g., ₦15/hr, ₦120/hr) are dynamically calculated target parameters, determined by real-time Network Hash Power and total Validator TVL (Total Value Locked). These values are estimates, not guaranteed static returns. We dynamically adjust rewards to preserve global protocol liquidity.
+                  The value of each completed video and each minute of gameplay is set by the platform and may be reviewed and adjusted at any time. Exchange rates used to convert USD rewards to Naira may also fluctuate. Rewards shown on the platform are estimates at the time of display and are finalised at the rates in effect when a withdrawal is processed.
                </p>
             </section>
 
             <section>
-               <h3 className="text-xl font-bold text-white mb-3">3. Software & Simulation Execution</h3>
+               <h3 className="text-xl font-bold text-white mb-3">3. Withdrawal Scheduling</h3>
                <p className="mb-4">
-                  Ecosystem Yield Multipliers generated via "Simulation Training" are dependent on verified connectivity streams. If a validator drops connection mid-simulation, or triggers automated anti-manipulation security systems, any unsynced yield will be unconditionally forfeited to the global ledger.
+                  Withdrawals are only processed on your plan&apos;s designated withdrawal days and may be subject to a minimum threshold. Payouts are sent to your linked Nigerian bank account and, depending on your plan, can take several business days to arrive. Delays caused by your bank or our payment provider are outside our control.
                </p>
             </section>
 
             <section>
-               <h3 className="text-xl font-bold text-white mb-3">4. Withdrawal Thresholds & Downline Prerequisites</h3>
+               <h3 className="text-xl font-bold text-white mb-3">4. Referral Requirements</h3>
                <p className="mb-4">
-                  As a core mechanism for ensuring sustainable platform liquidity, the MINE$ Protocol employs absolute mandatory withdrawal requirements. Node operators on Standard tiers (Starter / Advanced) must satisfy specific Affiliate Synchronization (min. downlines) and balance thresholds prior to settlement execution. These terms are immutable protocol logic parameters designed for asset protection. Participants lacking intent to engage with network growth mechanics should heavily consider upgrading to Elite Nodes beforehand to bypass these retention protocols.
+                  Starter and Advanced plans must maintain the minimum number of active referrals required to withdraw. If you do not meet the referral requirement for your plan, your pending withdrawals will be held until the requirement is satisfied. Elite plan members are exempt from this requirement.
+               </p>
+            </section>
+
+            <section>
+               <h3 className="text-xl font-bold text-white mb-3">5. Account Misuse</h3>
+               <p className="mb-4">
+                  Using bots, scripts, multiple accounts, or any automated method to generate rewards is prohibited. If we detect such activity, we may void the rewards in question, suspend your withdrawals, or close your account. Rewards forfeited in these circumstances will not be reinstated.
+               </p>
+            </section>
+
+            <section>
+               <h3 className="text-xl font-bold text-white mb-3">6. Not a Financial Product</h3>
+               <p className="mb-4">
+                  Mines is an entertainment and rewards platform. It is not a bank, investment vehicle, or financial advisory service. Plan fees and rewards are for platform access and activity completion and should not be treated as savings or an investment. You are solely responsible for how you spend your money on the platform.
                </p>
             </section>
 
             <div className="p-6 mt-8 rounded-2xl bg-[var(--surface-900)] border border-[var(--border)] italic">
-               "By finalizing a node deployment on MINE$ Protocol, operators forfeit liability claims against developers concerning unvested stakes arising from protocol mathematical constraints or natural cyclic network depreciation."
+               By creating an account and using Mines, you acknowledge that you have read this disclaimer and accept these risks. The platform does not guarantee any minimum or maximum earnings, and you agree not to hold the platform liable for lost earnings arising from policy changes, account suspension, or activity adjustments.
             </div>
          </div>
       </div>

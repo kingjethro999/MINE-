@@ -9,33 +9,56 @@ export default function PrivacyPolicyPage() {
             Data Protection
          </div>
          <h1 className="font-[family-name:var(--font-syne)] text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">Privacy Policy</h1>
-         <p className="text-lg text-[var(--text-secondary)]">How we process protocol metadata and personal identifiers.</p>
+         <p className="text-lg text-[var(--text-secondary)]">How we collect, use, and protect your personal information.</p>
       </div>
 
       <div className="space-y-8 text-[var(--text-secondary)] leading-relaxed text-sm bg-[var(--surface-800)] border border-[var(--surface-600)] p-8 md:p-12 rounded-[32px]">
          <section>
-            <h3 className="text-xl font-bold text-white mb-3">Information Aggregation</h3>
+            <h3 className="text-xl font-bold text-white mb-3">Information We Collect</h3>
             <p>
-               Beyond standard email registration, the protocol passively collects on-chain metrics regarding transaction pacing, IP-geolocation correlation (for load balancing regional nodes), and interaction behavioral modeling during Simulation Training. Financial information utilized for off-ramp liquidity (Bank Details) is explicitly tokenized and routed to PCI-DSS compliant third-party banking bridges. $MINE Protocol does not store plaintext banking identities on local databases.
+               When you register and use the platform, we collect information you provide directly, including your email address, account credentials, and any profile details you choose to add. To process withdrawals, we collect the bank account details you provide for payouts. We also automatically collect limited technical information such as your device type, browser, and IP address to operate and secure the service.
             </p>
          </section>
 
          <section>
-            <h3 className="text-xl font-bold text-white mb-3">Data Utilization</h3>
+            <h3 className="text-xl font-bold text-white mb-3">How We Use Your Information</h3>
             <p>
-               Synchronized data is exclusively leveraged for:
+               We use your information to:
                <ul className="list-disc pl-5 mt-3 space-y-2">
-                  <li>Resolving fiat settlement bottlenecks in the liquidity pool.</li>
-                  <li>Monitoring sybil behaviors and multi-node framing logic.</li>
-                  <li>Connecting node metrics for the Affiliate tracking API to map user downlines.</li>
+                  <li>Create and manage your account, plans, and earnings.</li>
+                  <li>Process plan payments and withdrawals to your bank account.</li>
+                  <li>Track referrals made through your unique referral link.</li>
+                  <li>Prevent fraud, multi-accounting, and abuse of the platform.</li>
+                  <li>Send service updates and respond to your support requests.</li>
                </ul>
             </p>
          </section>
 
          <section>
-            <h3 className="text-xl font-bold text-white mb-3">Third-Party Verification Ecosystems</h3>
+            <h3 className="text-xl font-bold text-white mb-3">Third-Party Services</h3>
             <p>
-               In accordance with strict security standards, portions of metadata may be interfaced with anti-fraud oracles and KYC (Know Your Customer) APIs when validators request exceptionally large off-ramp settlements. This ensures our operational liquidity remains uncompromised by malicious synthetic agents.
+               We share limited data with trusted service providers who help us operate the platform, including payment processing, bank account verification, hosting, and analytics. Your bank details are passed to our payment provider solely to complete withdrawals and are never used for marketing. We do not sell, rent, or trade your personal information to any third party.
+            </p>
+         </section>
+
+         <section>
+            <h3 className="text-xl font-bold text-white mb-3">Data Security</h3>
+            <p>
+               We apply reasonable technical and organisational measures to protect your data, including encryption in transit and at rest. Passwords are stored in hashed form, and we never store your bank account details in plaintext. No method of transmission over the internet is completely secure, and we cannot guarantee absolute security.
+            </p>
+         </section>
+
+         <section>
+            <h3 className="text-xl font-bold text-white mb-3">Data Retention &amp; Your Rights</h3>
+            <p>
+               We retain your information for as long as your account is active or as needed to provide the service, comply with legal obligations, resolve disputes, and enforce our agreements. You may request access to, correction of, or deletion of your personal data by contacting our support team. Deleting your account does not remove information we are legally required to keep.
+            </p>
+         </section>
+
+         <section>
+            <h3 className="text-xl font-bold text-white mb-3">Cookies</h3>
+            <p>
+               We use essential cookies and similar technologies to keep you signed in and to remember your preferences. These are required for the platform to function. We do not use cookies to build advertising profiles of you.
             </p>
          </section>
       </div>

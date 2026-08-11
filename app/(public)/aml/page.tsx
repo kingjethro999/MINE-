@@ -6,35 +6,41 @@ export default function AMLPolicyPage() {
       <div className="mb-12">
          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 text-[var(--color-accent)] text-xs font-bold uppercase tracking-widest mb-6">
             <Search size={14} />
-            Compliance Architecture
+            Compliance Policy
          </div>
-         <h1 className="font-[family-name:var(--font-syne)] text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">AML & KYC Protocol</h1>
-         <p className="text-lg text-[var(--text-secondary)]">Anti-Money Laundering frameworks enforcing institutional grade legitimacy.</p>
+         <h1 className="font-[family-name:var(--font-syne)] text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">Anti-Money Laundering Policy</h1>
+         <p className="text-lg text-[var(--text-secondary)]">Our commitment to preventing money laundering and financial fraud.</p>
       </div>
 
       <div className="bg-[var(--surface-800)] border border-[var(--surface-600)] p-8 md:p-12 rounded-[32px]">
          <div className="prose prose-invert max-w-none text-sm text-[var(--text-secondary)]">
-            <h3 className="text-xl font-bold text-white mb-4">Zero-Tolerance Synthetic Flow Policy</h3>
+            <h3 className="text-xl font-bold text-white mb-4">Our Commitment</h3>
             <p className="mb-6">
-               The $MINE Ecosystem is designed to empower organic validators and legitimate network participants. We employ cutting-edge on-chain heuristics to monitor fund pathways. Any node identified engaging in "layering," "tumbling," or any obfuscation technique designed to mask the origin of the fiat or crypto injected into the protocol will be immediately halted.
+               Mines is committed to operating with integrity and to complying with applicable anti-money laundering (AML) regulations. We take reasonable steps to ensure the platform is not used to launder money, fund illegal activity, or process payments derived from criminal conduct. We cooperate with the relevant Nigerian authorities in the investigation of financial crime.
             </p>
 
-            <h3 className="text-xl font-bold text-white mb-4">Tiered Identity Verification (KYC)</h3>
+            <h3 className="text-xl font-bold text-white mb-4">Identity Verification for Withdrawals</h3>
             <p className="mb-6">
-               Currently, our settlement structures run on heuristic faith for Starter and Advanced nodes up to specific transactional velocity ceilings. However:
+               To withdraw earnings, you must link a valid Nigerian bank account in your own name. We verify withdrawal accounts and may require additional identity verification before processing payouts. This may include a valid government-issued identification document. Withdrawals will not be processed until verification is completed.
             </p>
-            <ul className="list-disc pl-5 mb-6 space-y-2">
-               <li><strong>Level 1 (Algorithmic Sync):</strong> Standard usage requires email and verified withdrawal destination matching the regional IP mapping.</li>
-               <li><strong>Level 2 (Deep Verification):</strong> If the system flags anomalous yield extraction rates, or irregular off-ramp frequencies, a mandatory halt will suspend payouts until government-issued identification is manually verified by the treasury administration.</li>
-            </ul>
 
-            <h3 className="text-xl font-bold text-white mb-4">Suspicious Activity Reports (SAR)</h3>
+            <h3 className="text-xl font-bold text-white mb-4">Monitoring and Detection</h3>
             <p className="mb-6">
-               Our protocol explicitly complies with international financial policing. Operations bypassing our organic ecosystem caps or injecting illicitly obtained capital into the node infrastructure are reported to pertinent operational authorities without warning.
+               We monitor accounts and payout activity for signs of suspicious behaviour, including multiple accounts linked to the same person, unusual withdrawal patterns, and attempts to move funds through accounts that do not match the registered user. We also screen against relevant sanction lists and report activity we reasonably suspect to be money laundering or fraud.
+            </p>
+
+            <h3 className="text-xl font-bold text-white mb-4">Freezing and Withholding</h3>
+            <p className="mb-6">
+               Where suspicious activity is identified, we may freeze an account and withhold pending withdrawals while we investigate. If an account is found to be involved in money laundering or fraud, we will close the account, forfeit the affected balance, and report the matter to the appropriate authorities without notice to the user.
+            </p>
+
+            <h3 className="text-xl font-bold text-white mb-4">Your Responsibility</h3>
+            <p className="mb-6">
+               You agree to provide accurate information, to use only your own bank accounts for withdrawals, and to notify us of any changes to your details. Assisting others in moving funds through the platform, or using third-party accounts to receive payouts, is a violation of this policy and will lead to account closure.
             </p>
 
             <div className="p-4 mt-6 bg-[var(--color-accent)]/5 border-l-2 border-[var(--color-accent)]">
-               <p className="text-xs font-bold text-[var(--color-accent)] uppercase tracking-widest">A clean protocol protects your yield. Strict enforcement is a protocol necessity.</p>
+               <p className="text-xs font-bold text-[var(--color-accent)] uppercase tracking-widest">Strict enforcement keeps the platform safe for everyone. Suspicious activity will be reported.</p>
             </div>
          </div>
       </div>
