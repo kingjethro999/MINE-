@@ -5,6 +5,35 @@ import { headers } from "next/headers";
 import crypto from "crypto";
 import { NextResponse } from "next/server";
 
+const SEVENCORP_BACKEND =
+  (process.env.SEVENCORP_BACKEND_URL ?? "http://100.58.214.89:4000").replace(/\/$/, "");
+const SEVENCORP_WEBHOOK_SECRET = process.env.SEVENCORP_WEBHOOK_SECRET ?? "";
+
+/** Forward a successful 7Corp payment to the 7Corp backend for fulfillment. */
+async function notifySevencorp(reference: string) {
+  if (!SEVENCORP_WEBHOOK_SECRET) {
+    console.error("[webhook] SEVENCORP_WEBHOOK_SECRET not set — cannot notify 7Corp backend");
+    return;
+  }
+  try {
+    const res = await fetch(`${SEVENCORP_BACKEND}/api/payments/webhook`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-sevencorp-secret": SEVENCORP_WEBHOOK_SECRET,
+      },
+      body: JSON.stringify({ reference, status: "success", verified: true }),
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      console.error(`[webhook] 7Corp notification failed (${res.status}):`, text.slice(0, 300));
+    }
+  } catch (err) {
+    console.error("[webhook] 7Corp notification error:", (err as Error).message);
+  }
+}
+
 async function activateBoost(reference: string, userId: string) {
   const tierMatch = reference.split("_")[1];
   const now = new Date();
@@ -48,8 +77,17 @@ export async function POST(req: Request) {
   const event = JSON.parse(body);
 
   if (event.event === "charge.success") {
-    const reference = event.data.reference;
+    const reference: string = event.data.reference;
 
+    // ── 7.Corp payments ───────────────────────────────────────────────────────
+    // References prefixed with "7CORP_" belong to the 7Corp platform.
+    // Mines doesn't store these users — just forward the notification.
+    if (reference.startsWith("7CORP_")) {
+      await notifySevencorp(reference);
+      return NextResponse.json({ status: "ok" });
+    }
+
+    // ── Mines-native payments ─────────────────────────────────────────────────
     const pending = await prisma.payment.findUnique({
       where: { paystackRef: reference },
     });

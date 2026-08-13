@@ -9,7 +9,13 @@ export function getPaystackCallbackUrl(): string {
   return `${getAppUrl()}/api/paystack/callback`;
 }
 
-export async function initializePayment(email: string, amount: number, ref: string) {
+export async function initializePayment(
+  email: string,
+  amount: number,
+  ref: string,
+  currency?: string,
+  callbackUrl?: string
+) {
   const res = await fetch("https://api.paystack.co/transaction/initialize", {
     method: "POST",
     headers: {
@@ -20,7 +26,8 @@ export async function initializePayment(email: string, amount: number, ref: stri
       email,
       amount: amount * 100,
       reference: ref,
-      callback_url: getPaystackCallbackUrl(),
+      ...(currency ? { currency } : {}),
+      callback_url: callbackUrl ?? getPaystackCallbackUrl(),
     }),
   });
   return res.json();
