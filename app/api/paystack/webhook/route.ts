@@ -10,11 +10,36 @@ const SEVENCORP_BACKEND =
 const SEVENCORP_WEBHOOK_SECRET = process.env.SEVENCORP_WEBHOOK_SECRET ?? "";
 
 /** Forward a successful 7Corp payment to the 7Corp backend for fulfillment. */
-async function notifySevencorp(reference: string) {
+async function notifySevencorp(event: {
+  event: string;
+  data: Record<string, unknown>;
+}) {
   if (!SEVENCORP_WEBHOOK_SECRET) {
     console.error("[webhook] SEVENCORP_WEBHOOK_SECRET not set — cannot notify 7Corp backend");
     return;
   }
+  const d = event.data as Record<string, any>;
+  const payload: Record<string, unknown> = {
+    reference: d.reference,
+    status: "success",
+    verified: true,
+  };
+
+  // Subscription charges (first payment + every monthly renewal) carry these.
+  const subscriptionCode = d.subscription_code ?? d.subscription?.subscription_code;
+  if (subscriptionCode) payload.subscription_code = subscriptionCode;
+
+  // Our plans are named "7CORP_<PLANID>_<CURRENCY>" — recover the 7.Corp plan id.
+  const planName = d.plan_object?.name;
+  if (typeof planName === "string" && planName.startsWith("7CORP_")) {
+    const planId = planName.split("_")[1]?.toLowerCase();
+    if (planId) payload.plan_id = planId;
+  }
+
+  if (typeof d.amount === "number") payload.amount = d.amount / 100;
+  if (d.currency) payload.currency = d.currency;
+  if (d.period_end) payload.current_period_end = d.period_end;
+
   try {
     const res = await fetch(`${SEVENCORP_BACKEND}/api/payments/webhook`, {
       method: "POST",
@@ -22,7 +47,7 @@ async function notifySevencorp(reference: string) {
         "Content-Type": "application/json",
         "x-sevencorp-secret": SEVENCORP_WEBHOOK_SECRET,
       },
-      body: JSON.stringify({ reference, status: "success", verified: true }),
+      body: JSON.stringify(payload),
       signal: AbortSignal.timeout(15_000),
     });
     if (!res.ok) {
@@ -83,7 +108,7 @@ export async function POST(req: Request) {
     // References prefixed with "7CORP_" belong to the 7Corp platform.
     // Mines doesn't store these users — just forward the notification.
     if (reference.startsWith("7CORP_")) {
-      await notifySevencorp(reference);
+      await notifySevencorp(event);
       return NextResponse.json({ status: "ok" });
     }
 

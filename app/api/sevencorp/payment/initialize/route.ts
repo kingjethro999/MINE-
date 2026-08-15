@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { initializePayment } from "@/lib/paystack";
+import { initializePayment, initializeSubscription, getOrCreatePlan } from "@/lib/paystack";
 
 const WEBHOOK_SECRET = process.env.SEVENCORP_WEBHOOK_SECRET ?? "";
 
@@ -12,6 +12,11 @@ const WEBHOOK_SECRET = process.env.SEVENCORP_WEBHOOK_SECRET ?? "";
  *
  * The reference will be prefixed with "7CORP_" so the Paystack webhook
  * can route it back to the 7.Corp notification handler.
+ *
+ * When `subscription` is true, this creates a plan-backed checkout: Paystack
+ * sets up an auto-renewing monthly subscription after the first payment.
+ * The plan code comes from `planCode` (7.Corp-side PAYSTACK_PLAN_* env) or is
+ * created lazily via SEVENCORP_PLAN_* env / on-the-fly plan creation.
  */
 export async function POST(req: NextRequest) {
   // Verify shared secret
@@ -25,9 +30,11 @@ export async function POST(req: NextRequest) {
     amount: number;
     currency: "NGN" | "USD";
     reference: string;
-    planId: string;
+    planId: "basic" | "pro" | "premium";
     userId: string;
     callbackUrl: string;
+    subscription?: boolean;
+    planCode?: string;
   };
 
   try {
@@ -36,7 +43,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  if (!body.email || !body.amount || !body.reference || !body.callbackUrl) {
+  if (!body.email || !body.reference || !body.callbackUrl) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
@@ -46,16 +53,35 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // initializePayment in lib/paystack.ts already multiplies amount by 100
-    // For USD we pass the dollar amount; Paystack handles USD if international
-    // payments are enabled on the account.
-    const result = await initializePayment(
-      body.email,
-      body.amount,
-      body.reference,
-      body.currency,
-      body.callbackUrl
-    );
+    let result: {
+      status: boolean;
+      message?: string;
+      data?: { authorization_url: string; reference: string; access_code: string };
+    };
+
+    if (body.subscription) {
+      if (!body.planId) {
+        return NextResponse.json({ error: "planId required for subscriptions" }, { status: 400 });
+      }
+      // Resolve a monthly Paystack plan: prefer the code the 7.Corp backend
+      // configured, otherwise create/reuse one for this plan + currency.
+      const planCode =
+        body.planCode ?? (await getOrCreatePlan(body.planId, body.amount, body.currency));
+
+      // Plan-backed checkout: amount comes from the Paystack plan, not the body.
+      result = await initializeSubscription(body.email, body.reference, planCode, body.callbackUrl);
+    } else {
+      // initializePayment in lib/paystack.ts already multiplies amount by 100
+      // For USD we pass the dollar amount; Paystack handles USD if international
+      // payments are enabled on the account.
+      result = await initializePayment(
+        body.email,
+        body.amount,
+        body.reference,
+        body.currency,
+        body.callbackUrl
+      );
+    }
 
     if (!result.status || !result.data?.authorization_url) {
       console.error("[sevencorp/payment] Paystack init failed:", result);
